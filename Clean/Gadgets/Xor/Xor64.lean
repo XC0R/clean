@@ -102,15 +102,29 @@ lemma xor_val {x y : F p} (hx : x.val < 256) (hy : y.val < 256) :
   have h_byte : x.val ^^^ y.val < 256 := Nat.xor_lt_two_pow (n:=8) hx hy
   linarith [p_large_enough.elim]
 
+set_option maxHeartbeats 800000 in
 theorem completeness : Completeness (F p) elaborated Assumptions := by
   intro i0 env input_var h_env input h_input as
   let ⟨⟨ x0, x1, x2, x3, x4, x5, x6, x7 ⟩, ⟨ y0, y1, y2, y3, y4, y5, y6, y7 ⟩⟩ := input
   simp only [circuit_norm, explicit_provable_type, Inputs.mk.injEq, U64.mk.injEq] at h_input
   simp only [Assumptions, circuit_norm, U64.Normalized] at as
-  simp only [h_input, circuit_norm, main, ByteXorTable, Fin.forall_iff] at h_env ⊢
+  obtain ⟨⟨h_x0, h_x1, h_x2, h_x3, h_x4, h_x5, h_x6, h_x7⟩,
+         h_y0, h_y1, h_y2, h_y3, h_y4, h_y5, h_y6, h_y7⟩ := h_input
+  simp only [h_x0, h_x1, h_x2, h_x3, h_x4, h_x5, h_x6, h_x7,
+    h_y0, h_y1, h_y2, h_y3, h_y4, h_y5, h_y6, h_y7,
+    circuit_norm, main, ByteXorTable, Fin.forall_iff] at h_env ⊢
   simp only [circuit_norm, explicit_provable_type] at h_env ⊢
   have h_env0 : env.get i0 = ↑(ZMod.val x0 ^^^ ZMod.val y0) := by simpa using h_env 0
+  obtain ⟨x0_b, x1_b, x2_b, x3_b, x4_b, x5_b, x6_b, x7_b⟩ := as.1
+  obtain ⟨y0_b, y1_b, y2_b, y3_b, y4_b, y5_b, y6_b, y7_b⟩ := as.2
+  have hp := p_large_enough.elim
   simp_all [xor_val]
+  refine ⟨Nat.mod_eq_of_lt ?_, Nat.mod_eq_of_lt ?_, Nat.mod_eq_of_lt ?_, Nat.mod_eq_of_lt ?_,
+          Nat.mod_eq_of_lt ?_, Nat.mod_eq_of_lt ?_, Nat.mod_eq_of_lt ?_, Nat.mod_eq_of_lt ?_⟩ <;>
+    nlinarith [Nat.xor_lt_two_pow (n:=8) x0_b y0_b, Nat.xor_lt_two_pow (n:=8) x1_b y1_b,
+      Nat.xor_lt_two_pow (n:=8) x2_b y2_b, Nat.xor_lt_two_pow (n:=8) x3_b y3_b,
+      Nat.xor_lt_two_pow (n:=8) x4_b y4_b, Nat.xor_lt_two_pow (n:=8) x5_b y5_b,
+      Nat.xor_lt_two_pow (n:=8) x6_b y6_b, Nat.xor_lt_two_pow (n:=8) x7_b y7_b]
 
 def circuit : FormalCircuit (F p) Inputs U64 where
   Assumptions

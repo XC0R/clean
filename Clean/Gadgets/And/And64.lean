@@ -71,14 +71,16 @@ theorem soundness : Soundness (F p) elaborated Assumptions Spec := by
   simp only [circuit_norm, explicit_provable_type, Vector.mapRange,
     main, Assumptions, And8.circuit, And8.Assumptions, And8.Spec,
     U64.Normalized] at h_assumptions h_holds h_input ⊢
-  simp_all
+  obtain ⟨⟨h1,h2,h3,h4,h5,h6,h7,h8⟩,h9,h10,h11,h12,h13,h14,h15,h16⟩ := h_input
+  simp only [h1,h2,h3,h4,h5,h6,h7,h8,h9,h10,h11,h12,h13,h14,h15,h16] at h_holds ⊢
+  exact h_holds
 
 theorem completeness : Completeness (F p) elaborated Assumptions := by
   intro i env input_var h_env ⟨ x, y ⟩ h_input h_assumptions
   cases x; cases y
   simp only [circuit_norm, explicit_provable_type,
     main, Assumptions, And8.circuit, And8.Assumptions,
-    U64.Normalized] at h_assumptions h_input ⊢
+    U64.Normalized] at h_assumptions h_env ⊢
   simp_all
 
 def circuit : FormalCircuit (F p) Inputs U64 where

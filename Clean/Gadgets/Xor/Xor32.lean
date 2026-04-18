@@ -99,10 +99,16 @@ theorem completeness : Completeness (F p) elaborated Assumptions := by
   obtain ⟨ x0_byte, x1_byte, x2_byte, x3_byte ⟩ := x_bytes
   obtain ⟨ y0_byte, y1_byte, y2_byte, y3_byte ⟩ := y_bytes
 
-  simp only [h_input, circuit_norm, main, ByteXorTable, Fin.forall_iff] at h_env ⊢
+  obtain ⟨⟨h_x0, h_x1, h_x2, h_x3⟩, h_y0, h_y1, h_y2, h_y3⟩ := h_input
+  simp only [h_x0, h_x1, h_x2, h_x3, h_y0, h_y1, h_y2, h_y3,
+    circuit_norm, main, ByteXorTable, Fin.forall_iff] at h_env ⊢
   simp only [circuit_norm, explicit_provable_type] at h_env ⊢
   have h_env0 : env.get i0 = ↑(ZMod.val x0 ^^^ ZMod.val y0) := by simpa using h_env 0
   simp_all [xor_val]
+  refine ⟨Nat.mod_eq_of_lt ?_, Nat.mod_eq_of_lt ?_, Nat.mod_eq_of_lt ?_, Nat.mod_eq_of_lt ?_⟩ <;>
+    (have := p_large_enough.elim; nlinarith [Nat.xor_lt_two_pow (n:=8) x0_byte y0_byte,
+      Nat.xor_lt_two_pow (n:=8) x1_byte y1_byte, Nat.xor_lt_two_pow (n:=8) x2_byte y2_byte,
+      Nat.xor_lt_two_pow (n:=8) x3_byte y3_byte])
 
 def circuit : FormalCircuit (F p) Inputs U32 where
   Assumptions

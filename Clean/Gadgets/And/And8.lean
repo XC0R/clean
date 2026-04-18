@@ -78,13 +78,16 @@ instance elaborated : ElaboratedCircuit (F p) Inputs field where
 
 theorem soundness : Soundness (F p) elaborated Assumptions Spec := by
   intro i env ⟨ x_var, y_var ⟩ ⟨ x, y ⟩ h_input h_assumptions h_xor
-  simp_all only [circuit_norm, main, Assumptions, Spec, ByteXorTable, Inputs.mk.injEq]
+  simp_all only [circuit_norm, main, Assumptions, Spec, ByteXorTable]
+  change Inputs.mk (Expression.eval env x_var) (Expression.eval env y_var) = Inputs.mk x y at h_input
+  simp only [Inputs.mk.injEq] at h_input
+  rw [h_input.1, h_input.2] at h_xor
+  obtain ⟨_, _, h_xor⟩ := h_xor
   have ⟨ hx_byte, hy_byte ⟩ := h_assumptions
   set w := env.get i
   set z := x + y + -(2*w)
   show w.val = x.val &&& y.val
 
-  -- it's easier to prove something about 2*w since it features in the constraint
   have two_and_field : 2*w = x + y - z := by ring
 
   have x_y_val : (x + y).val = x.val + y.val := by field_to_nat
@@ -108,7 +111,10 @@ theorem soundness : Soundness (F p) elaborated Assumptions Spec := by
 
 theorem completeness : Completeness (F p) elaborated Assumptions := by
   intro i env ⟨ x_var, y_var ⟩ h_env ⟨ x, y ⟩ h_input h_assumptions
-  simp_all only [circuit_norm, main, Assumptions, ByteXorTable, Inputs.mk.injEq]
+  simp_all only [circuit_norm, main, Assumptions, ByteXorTable]
+  change Inputs.mk (Expression.eval env x_var) (Expression.eval env y_var) = Inputs.mk x y at h_input
+  simp only [Inputs.mk.injEq] at h_input
+  rw [h_input.1, h_input.2] at h_env ⊢
   obtain ⟨ hx_byte, hy_byte ⟩ := h_assumptions
   set w : F p := ZMod.val x &&& ZMod.val y
   have hw : w = ZMod.val x &&& ZMod.val y := rfl
@@ -131,6 +137,7 @@ theorem completeness : Completeness (F p) elaborated Assumptions := by
     rw [two_and_val, x_y_val]
     exact two_and_le_add hx_byte hy_byte
 
+  refine ⟨hx_byte, hy_byte, ?_⟩
   rw [←sub_eq_add_neg, ZMod.val_sub two_and_lt, x_y_val, two_and_val,
     ←and_times_two_add_xor hx_byte hy_byte, add_comm, Nat.add_sub_cancel]
 

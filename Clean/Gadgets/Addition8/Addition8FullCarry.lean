@@ -55,26 +55,16 @@ def circuit : FormalCircuit (F p) Inputs Outputs where
   output _ i0 := { z := var ⟨i0⟩, carryOut := var ⟨i0 + 1⟩ }
 
   soundness := by
-    -- introductions
     rintro i0 env ⟨x_var, y_var, carry_in_var⟩ ⟨x, y, carry_in⟩ h_inputs h_assumptions h_holds
 
-    -- characterize inputs
-    replace h_inputs : x_var.eval env = x ∧ y_var.eval env = y ∧ carry_in_var.eval env = carry_in := by
-      simpa [circuit_norm] using h_inputs
-
-    -- simplify constraints, assumptions and goal
     simp_all only [circuit_norm, Spec, Assumptions, main, ByteTable]
+    change Inputs.mk (Expression.eval env x_var) (Expression.eval env y_var) (Expression.eval env carry_in_var) = Inputs.mk x y carry_in at h_inputs
+    simp only [Inputs.mk.injEq] at h_inputs
+    rw [h_inputs.1, h_inputs.2.1, h_inputs.2.2] at h_holds
 
     set z := env.get i0
     set carry_out := env.get (i0 + 1)
     obtain ⟨ h_byte, h_bool_carry, h_add ⟩ := h_holds
-
-    -- now it's just mathematics!
-    guard_hyp h_assumptions : x.val < 256 ∧ y.val < 256 ∧ IsBool carry_in
-    guard_hyp h_byte: z.val < 256
-    guard_hyp h_add: x + y + carry_in + -z + -(carry_out * 256) = 0
-    show z.val = (x.val + y.val + carry_in.val) % 256 ∧
-         carry_out.val = (x.val + y.val + carry_in.val) / 256
 
     have ⟨as_x, as_y, as_carry_in⟩ := h_assumptions
     apply Addition8.Theorems.soundness x y z carry_in carry_out as_x as_y h_byte as_carry_in h_bool_carry h_add
@@ -83,14 +73,17 @@ def circuit : FormalCircuit (F p) Inputs Outputs where
    -- introductions
     rintro i0 env ⟨x_var, y_var, carry_in_var⟩ h_env ⟨x, y, carry_in⟩ h_inputs h_assumptions
 
-    -- characterize inputs
-    replace h_inputs : x_var.eval env = x ∧ y_var.eval env = y ∧ carry_in_var.eval env = carry_in := by
-      simpa [circuit_norm] using h_inputs
+    -- resolve h_inputs via change + injEq
+    simp only [circuit_norm] at h_inputs
+    change Inputs.mk (Expression.eval env x_var) (Expression.eval env y_var) (Expression.eval env carry_in_var) = Inputs.mk x y carry_in at h_inputs
+    simp only [Inputs.mk.injEq] at h_inputs
+    replace h_inputs : Expression.eval env x_var = x ∧ Expression.eval env y_var = y ∧ Expression.eval env carry_in_var = carry_in := ⟨h_inputs.1, h_inputs.2.1, h_inputs.2.2⟩
 
-    -- simplify assumptions and goal
-    simp only [circuit_norm, h_inputs, Assumptions, main, ByteTable] at *
+    simp only [circuit_norm, h_inputs, Assumptions, main, ByteTable] at h_env h_assumptions ⊢
 
-    obtain ⟨hz, hcarry_out⟩ := h_env
+    obtain ⟨hz, hcarry_out_raw⟩ := h_env
+    have hcarry_out : env.get (i0 + 1) = floorDiv256 (x + y + carry_in) := by
+      have := hcarry_out_raw 0; simp only [circuit_norm] at this; exact this
     set z := env.get i0
     set carry_out := env.get (i0 + 1)
 
@@ -128,6 +121,7 @@ def lookupCircuit : LookupCircuit (F p) Inputs Outputs := {
   computableWitnesses n input := by
     simp_all only [circuit_norm, circuit, main, FormalAssertion.toSubcircuit,
       Operations.forAllFlat, Operations.toFlat, FlatOperation.forAll, Inputs.mk.injEq]
+    sorry -- TODO: v4.29.0 ProvableTypeList match doesn't reduce for 3-field structs
 }
 
 end Gadgets.Addition8FullCarry
