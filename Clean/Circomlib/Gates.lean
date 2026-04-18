@@ -41,7 +41,7 @@ def circuit : FormalCircuit (F p) fieldPair field where
   main
   localLength _ := 1
   localLength_eq := by intros; rfl
-  subcircuitsConsistent := by simp +arith [circuit_norm, main]
+  subcircuitsConsistent := by intros; and_intros <;> (try simp only [circuit_norm]; try first | ac_rfl | trivial)
 
   Assumptions input := IsBool input.1 ∧ IsBool input.2
   Spec input output :=
@@ -83,7 +83,7 @@ def circuit : FormalCircuit (F p) fieldPair field where
   main
   localLength _ := 1
   localLength_eq := by intros; rfl
-  subcircuitsConsistent := by simp +arith [circuit_norm, main]
+  subcircuitsConsistent := by intros; and_intros <;> (try simp only [circuit_norm]; try first | ac_rfl | trivial)
 
   Assumptions input := IsBool input.1 ∧ IsBool input.2
   Spec input output :=
@@ -123,7 +123,7 @@ def circuit : FormalCircuit (F p) fieldPair field where
   main
   localLength _ := 1
   localLength_eq := by intros; rfl
-  subcircuitsConsistent := by simp +arith [circuit_norm, main]
+  subcircuitsConsistent := by intros; and_intros <;> (try simp only [circuit_norm]; try first | ac_rfl | trivial)
 
   Assumptions input := IsBool input.1 ∧ IsBool input.2
   Spec input output :=
@@ -163,7 +163,7 @@ def circuit : FormalCircuit (F p) field field where
   main
   localLength _ := 1
   localLength_eq := by intros; rfl
-  subcircuitsConsistent := by simp +arith [circuit_norm, main]
+  subcircuitsConsistent := by intros; and_intros <;> (try simp only [circuit_norm]; try first | ac_rfl | trivial)
 
   Assumptions input := IsBool input
   Spec input output :=
@@ -205,7 +205,7 @@ def circuit : FormalCircuit (F p) fieldPair field where
   main
   localLength _ := 1
   localLength_eq := by intros; rfl
-  subcircuitsConsistent := by simp +arith [circuit_norm, main]
+  subcircuitsConsistent := by intros; and_intros <;> (try simp only [circuit_norm]; try first | ac_rfl | trivial)
 
   Assumptions input := IsBool input.1 ∧ IsBool input.2
   Spec input output :=
@@ -247,7 +247,7 @@ def circuit : FormalCircuit (F p) fieldPair field where
   main
   localLength _ := 1
   localLength_eq := by intros; rfl
-  subcircuitsConsistent := by simp +arith [circuit_norm, main]
+  subcircuitsConsistent := by intros; and_intros <;> (try simp only [circuit_norm]; try first | ac_rfl | trivial)
 
   Assumptions input := IsBool input.1 ∧ IsBool input.2
   Spec input output :=
