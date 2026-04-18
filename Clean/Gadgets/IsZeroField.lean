@@ -34,16 +34,30 @@ def Spec (x : F) (output : F) : Prop :=
 
 theorem soundness : Soundness F elaborated Assumptions (Spec (F:=F)) := by
   circuit_proof_start
+  delta main at h_holds ⊢
+  simp only [circuit_norm] at *
+  obtain ⟨h1, h2⟩ := h_holds
+  subst h_input
   split
-  · rename_i h_input
-    simp only [h_input] at *
-    norm_num at *
-    assumption
-  · aesop
+  · simp_all
+  · rename_i h_ne
+    have : env.get (i₀ + 1) = 0 := by
+      by_contra h
+      exact h_ne (or_iff_not_imp_left.mp (mul_eq_zero.mp (show _ = _ from h2)) h)
+    exact this
 
 theorem completeness : Completeness F elaborated Assumptions := by
   circuit_proof_start
-  aesop
+  delta main at h_env ⊢
+  simp only [circuit_norm, explicit_provable_type] at *
+  refine ⟨h_env.2, ?_⟩
+  rw [h_env.2, h_env.1]
+  simp only [h_input]
+  split
+  · simp_all
+  · rename_i h
+    have h_inv := @mul_inv_cancel₀ F _ input h
+    erw [h_inv]; ring
 
 def circuit : FormalCircuit F field field := {
   elaborated with Assumptions, Spec := Spec (F:=F), soundness, completeness

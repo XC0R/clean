@@ -91,6 +91,8 @@ theorem soundness [DecidableEq F] : Soundness F (elaborated (F:=F) (M:=M)) Assum
 
 theorem completeness [DecidableEq F] : Completeness F (elaborated (F:=F) (M:=M)) Assumptions := by
   circuit_proof_start
+  delta main at ⊢
+  simp only [circuit_norm] at *
 
 /--
 Conditional selection. Computes: selector * ifTrue + (1 - selector) * ifFalse

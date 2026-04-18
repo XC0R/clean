@@ -39,6 +39,10 @@ def MemoryAccessList := List MemoryAccess
 abbrev timestamp_ordering (x y : MemoryAccess) := match x, y with
 | (t2, _a2, _r2, _w2), (t1, _a1, _r1, _w1) => t1 < t2
 
+instance (x y : MemoryAccess) : Decidable (timestamp_ordering x y) := by
+  obtain ⟨_, _, _, _⟩ := x; obtain ⟨_, _, _, _⟩ := y
+  simp only [timestamp_ordering]; apply Nat.decLt
+
 /--
   A memory access list is timestamp sorted if the timestamps are strictly decreasing.
 -/
@@ -275,7 +279,7 @@ example : MemoryAccessList.isConsistentOnline [
   (2, 0, 42, 44),
   (3, 2, 0, 45),
   (4, 1, 43, 46)
-].reverse (by simp [MemoryAccessList.isTimestampSorted]):= by
+].reverse (by unfold MemoryAccessList.isTimestampSorted; decide) := by
   simp_all [MemoryAccessList.isConsistentOnline, MemoryAccessList.lastWriteValue]
 
 example : ¬ MemoryAccessList.isConsistentOnline [
@@ -284,7 +288,7 @@ example : ¬ MemoryAccessList.isConsistentOnline [
   (2, 0, 43, 44), -- inconsistent read
   (3, 2, 0, 45),
   (4, 1, 43, 46)
-].reverse (by simp [MemoryAccessList.isTimestampSorted]):= by
+].reverse (by unfold MemoryAccessList.isTimestampSorted; decide) := by
   simp_all [MemoryAccessList.isConsistentOnline, MemoryAccessList.lastWriteValue]
 
 /--
@@ -310,7 +314,9 @@ theorem MemoryAccessList.filterAddress_cons (head : MemoryAccess) (tail : Memory
       (head :: (MemoryAccessList.filterAddress tail addr))
         else (MemoryAccessList.filterAddress tail addr))) := by
   obtain ⟨_t, a, _r, _w⟩ := head
-  simp [filterAddress, List.filter_cons]
+  unfold filterAddress
+  simp only [List.filter_cons, decide_eq_true_eq]
+  split_ifs <;> rfl
 
 /--
   A memory access list is consistent for a single address if the reads and writes to that address are consistent.

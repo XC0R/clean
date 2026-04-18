@@ -151,14 +151,15 @@ def fromUInt64 (x : UInt64) : U64 (F p) :=
 def valueU64 (x : U64 (F p)) (h : x.Normalized) : UInt64 :=
   UInt64.ofNatLT x.value (value_lt_of_normalized h)
 
+set_option maxHeartbeats 400000 in
 lemma fromUInt64_normalized (x : UInt64) : (fromUInt64 (p:=p) x).Normalized := by
   simp only [Normalized, fromUInt64, decomposeNat]
-  have h (x : ℕ) : ZMod.val (n:=p) (x % 256 : ℕ) < 256 := by
-    have : x % 256 < 256 := Nat.mod_lt _ (by norm_num)
-    rw [FieldUtils.val_lt_p]
-    assumption
-    linarith [p_large_enough.elim]
-  simp [h]
+  have h (y : ℕ) : ZMod.val (n:=p) (y % 256 : ℕ) < 256 := by
+    erw [FieldUtils.val_lt_p (y % 256)]
+    · exact Nat.mod_lt _ (by norm_num)
+    · have : y % 256 < 256 := Nat.mod_lt _ (by norm_num)
+      linarith [p_large_enough.elim]
+  exact ⟨h _, h _, h _, h _, h _, h _, h _, h _⟩
 
 theorem value_fromUInt64 (x : UInt64) : value (fromUInt64 (p:=p) x) = x.toNat := by
   simp only [value_horner, fromUInt64, decomposeNat, UInt64.toFin_val]
@@ -230,13 +231,12 @@ def fromByte (x : Fin 256) : U64 (F p) :=
 
 lemma fromByte_value {x : Fin 256} : (fromByte x).value (p:=p) = x := by
   simp [value, fromByte]
-  apply FieldUtils.val_lt_p x
-  linarith [x.is_lt, p_large_enough.elim]
+  exact Nat.mod_eq_of_lt (by linarith [x.is_lt, p_large_enough.elim])
 
 lemma fromByte_normalized {x : Fin 256} : (fromByte x).Normalized (p:=p) := by
   simp [Normalized, fromByte]
-  rw [FieldUtils.val_lt_p x]
-  repeat linarith [x.is_lt, p_large_enough.elim]
+  rw [Nat.mod_eq_of_lt (by linarith [x.is_lt, p_large_enough.elim] : (↑x : ℕ) < p)]
+  exact x.is_lt
 
 namespace ByteVector
 -- results about U64 when viewed as a vector of bytes, via `toLimbs` and `fromLimbs`
