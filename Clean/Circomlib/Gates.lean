@@ -40,7 +40,7 @@ def main (input : Expression (F p) × Expression (F p)) := do
 def circuit : FormalCircuit (F p) fieldPair field where
   main
   localLength _ := 1
-  localLength_eq := by simp [circuit_norm, main]
+  localLength_eq := by intros; rfl
   subcircuitsConsistent := by simp +arith [circuit_norm, main]
 
   Assumptions input := IsBool input.1 ∧ IsBool input.2
@@ -82,7 +82,7 @@ def main (input : Expression (F p) × Expression (F p)) := do
 def circuit : FormalCircuit (F p) fieldPair field where
   main
   localLength _ := 1
-  localLength_eq := by simp [circuit_norm, main]
+  localLength_eq := by intros; rfl
   subcircuitsConsistent := by simp +arith [circuit_norm, main]
 
   Assumptions input := IsBool input.1 ∧ IsBool input.2
@@ -122,7 +122,7 @@ def main (input : Expression (F p) × Expression (F p)) := do
 def circuit : FormalCircuit (F p) fieldPair field where
   main
   localLength _ := 1
-  localLength_eq := by simp [circuit_norm, main]
+  localLength_eq := by intros; rfl
   subcircuitsConsistent := by simp +arith [circuit_norm, main]
 
   Assumptions input := IsBool input.1 ∧ IsBool input.2
@@ -162,7 +162,7 @@ def main (input : Expression (F p)) := do
 def circuit : FormalCircuit (F p) field field where
   main
   localLength _ := 1
-  localLength_eq := by simp [circuit_norm, main]
+  localLength_eq := by intros; rfl
   subcircuitsConsistent := by simp +arith [circuit_norm, main]
 
   Assumptions input := IsBool input
@@ -204,7 +204,7 @@ def main (input : Expression (F p) × Expression (F p)) := do
 def circuit : FormalCircuit (F p) fieldPair field where
   main
   localLength _ := 1
-  localLength_eq := by simp [circuit_norm, main]
+  localLength_eq := by intros; rfl
   subcircuitsConsistent := by simp +arith [circuit_norm, main]
 
   Assumptions input := IsBool input.1 ∧ IsBool input.2
@@ -246,7 +246,7 @@ def main (input : Expression (F p) × Expression (F p)) := do
 def circuit : FormalCircuit (F p) fieldPair field where
   main
   localLength _ := 1
-  localLength_eq := by simp [circuit_norm, main]
+  localLength_eq := by intros; rfl
   subcircuitsConsistent := by simp +arith [circuit_norm, main]
 
   Assumptions input := IsBool input.1 ∧ IsBool input.2

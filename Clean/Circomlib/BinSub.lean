@@ -276,7 +276,7 @@ def circuit (n : ℕ) [hn : NeZero n] (hnout : 2^(n+1) < p) :
   main input := main n input
 
   localLength _ := n+1
-  localLength_eq := by simp [main, circuit_norm]
+  localLength_eq := by intros; rfl
 
   output _ i := varFromOffset (fields n) i
 
