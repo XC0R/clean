@@ -129,7 +129,8 @@ lemma inductPush_listCons_push {motive : {n : ℕ} → Vector α n → Sort u}
     inductPush nil push' (listCons x (xs.push a)) =
       push' (listCons x xs) a (inductPush nil push' (listCons x xs)) := by
   conv => lhs; simp only [listCons, inductPush]
-  rw [cast_eq_iff_heq]
+  apply eq_of_heq
+  refine (_root_.cast_heq _ _).trans ?_
   have h_push_len : (xs.push a).toList.length = n + 1 := by simp
   have h_to_push_cons :
       HEq (toPush ⟨.mk (x :: (xs.push a).toList), rfl⟩).1 (listCons x xs) := by
@@ -247,7 +248,7 @@ theorem cast_take_append_of_eq_length {v : Vector α n} {w : Vector α m} :
   have hv_length : v.toArray.toList.length = n := by simp
   rw [cast_mk, ←toArray_inj, take_eq_extract, toArray_extract, toArray_append,
     List.extract_toArray, Array.toList_append,
-    List.extract_eq_drop_take, List.drop_zero, Nat.sub_zero,
+    List.extract_eq_take_drop, List.drop_zero, Nat.sub_zero,
     List.take_append_of_le_length (Nat.le_of_eq hv_length.symm),
     List.take_of_length_le (Nat.le_of_eq hv_length), Array.toArray_toList]
 
@@ -257,7 +258,7 @@ theorem cast_drop_append_of_eq_length {v : Vector α n} {w : Vector α m} :
   have hw_length : w.toArray.toList.length = m := by simp
   rw [drop_eq_cast_extract, cast_cast, cast_mk, ←toArray_inj, toArray_extract, toArray_append,
     List.extract_toArray, Array.toList_append,
-    List.extract_eq_drop_take, Nat.add_sub_self_left,
+    List.extract_eq_take_drop, Nat.add_sub_self_left,
     List.drop_append_of_le_length (Nat.le_of_eq hv_length.symm),
     List.drop_of_length_le (Nat.le_of_eq hv_length), List.nil_append,
     List.take_of_length_le (Nat.le_of_eq hw_length), Array.toArray_toList]

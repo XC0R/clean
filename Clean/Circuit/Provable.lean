@@ -316,9 +316,8 @@ where
   | [], .nil => rfl
   | c :: cs, .cons a as => by
     simp only [componentsToElements, componentsFromElements, eval.go, ProvableType.eval, toVars]
-    rw [Vector.map_append, Vector.cast_take_append_of_eq_length, Vector.cast_drop_append_of_eq_length]
+    erw [Vector.map_append, Vector.cast_take_append_of_eq_length, Vector.cast_drop_append_of_eq_length]
     congr
-    -- recursively use this lemma!
     apply eval_eq_eval_aux
 
 /--
@@ -353,10 +352,9 @@ where
     | c :: cs, offset => by
       simp only [varFromOffset.go, componentsFromElements, ProvableType.varFromOffset, fromVars]
       have h_size : combinedSize' (c :: cs) = size c.type + combinedSize' cs := rfl
-      rw [Vector.cast_mapRange h_size, Vector.mapRange_add_eq_append, Vector.cast_rfl,
+      erw [Vector.cast_mapRange h_size, Vector.mapRange_add_eq_append, Vector.cast_rfl,
         Vector.cast_take_append_of_eq_length, Vector.cast_drop_append_of_eq_length]
       congr
-      -- recursively use this lemma
       rw [varFromOffset_eq_varFromOffset_aux]
       ac_rfl
 end ProvableStruct
@@ -492,7 +490,7 @@ theorem getElem_eval_toVars {F : Type} [Field F] {α : TypeMap} [ProvableType α
 theorem getElem_eval_fields {F : Type} [Field F] {n : ℕ} {env : Environment F}
   (x : Var (fields n) F) (i : ℕ) (hi : i < n) :
     Expression.eval env x[i] = (eval env x)[i] := by
-  simp only [eval, fromElements, instProvableTypeFields, toVars, Vector.getElem_map]
+  simp only [eval, fromElements, toVars, toElements, Vector.getElem_map]
 end ProvableType
 
 -- more concrete ProvableType instances
@@ -510,16 +508,16 @@ instance ProvableVector.instance : ProvableType (ProvableVector α n) where
   toElements x := x.map toElements |>.flatten
   fromElements v := v.toChunks (psize α) |>.map fromElements
   fromElements_toElements x := by
-    rw [Vector.flatten_toChunks, Vector.map_map, ProvableType.fromElements_comp_toElements, Vector.map_id]
+    erw [Vector.flatten_toChunks, Vector.map_map, ProvableType.fromElements_comp_toElements, Vector.map_id]
   toElements_fromElements v := by
-    rw [Vector.map_map, ProvableType.toElements_comp_fromElements, Vector.map_id, Vector.toChunks_flatten]
+    erw [Vector.map_map, ProvableType.toElements_comp_fromElements, Vector.map_id, Vector.toChunks_flatten]
 
 theorem eval_vector (env : Environment F)
   (x : Var (ProvableVector α n) F) :
     eval env x = x.map (eval env) := by
   simp only [eval, toVars, toElements, fromElements]
   simp only [Vector.map_flatten, Vector.map_map]
-  rw [Vector.flatten_toChunks]
+  erw [Vector.flatten_toChunks]
   simp [eval, toVars]
 
 theorem getElem_eval_vector (env : Environment F) (x : Var (ProvableVector α n) F) (i : ℕ) (h : i < n) :
@@ -557,14 +555,14 @@ theorem varFromOffset_vector {F : Type} [Field F] {α : TypeMap} [NonEmptyProvab
   | succ n ih =>
     rw [Vector.mapRange_succ, ←ih]
     simp only [varFromOffset, fromVars, fromElements, size]
-    rw [←Vector.map_push, Vector.toChunks_push]
+    erw [←Vector.map_push, Vector.toChunks_push]
     congr
     conv => rhs; congr; rhs; congr; intro i; rw [mul_comm, add_assoc]
     let create (i : ℕ) : Expression F := var ⟨ offset + i ⟩
     have h_create : (fun i => var ⟨ offset + (n * size α + i) ⟩) = (fun i ↦ create (n * size α + i)) := rfl
-    rw [h_create, ←Vector.mapRange_add_eq_append]
+    erw [h_create, ←Vector.mapRange_add_eq_append]
     have h_size_succ : (n + 1) * size α = n * size α + size α := by rw [add_mul]; ac_rfl
-    rw [←Vector.cast_mapRange h_size_succ]
+    erw [←Vector.cast_mapRange h_size_succ]
 end
 
 -- `ProvablePair`
@@ -607,27 +605,27 @@ def ProvablePair.toElements {α β: TypeMap} [ProvableType α] [ProvableType β]
 theorem eval_pair {α β: TypeMap} [ProvableType α] [ProvableType β] (env : Environment F)
   (a : Var α F) (b : Var β F) :
     eval (α:=ProvablePair α β) env (a, b) = (eval env a, eval env b) := by
-  simp only [eval, toVars, toElements, fromElements, Vector.map_append]
-  rw [Vector.cast_take_append_of_eq_length, Vector.cast_drop_append_of_eq_length]
+  simp only [eval, toVars, toElements, fromElements]
+  erw [Vector.map_append, Vector.cast_take_append_of_eq_length, Vector.cast_drop_append_of_eq_length]
 
 -- Specialized lemmas for Expression F to handle type inference issues
 @[circuit_norm ↓ high]
 theorem eval_pair_left_expr {β : TypeMap} [ProvableType β] (env : Environment F)
   (a : Expression F) (b : Var β F) :
     eval (α:=ProvablePair field β) env (a, b) = (Expression.eval env a, eval env b) := by
-  rw [eval_pair (α:=field), ProvableType.eval_field]
+  rw [eval_pair (α:=field), ProvableType.eval_field]; rfl
 
 @[circuit_norm ↓ high]
 theorem eval_pair_right_expr {α : TypeMap} [ProvableType α] (env : Environment F)
   (a : Var α F) (b : Expression F) :
     eval (α:=ProvablePair α field) env (a, b) = (eval env a, Expression.eval env b) := by
-  rw [eval_pair (β:=field), ProvableType.eval_field]
+  rw [eval_pair (β:=field), ProvableType.eval_field]; rfl
 
 @[circuit_norm ↓ high]
 theorem eval_pair_both_expr (env : Environment F)
   (a b : Expression F) :
     eval (α:=ProvablePair field field) env (a, b) = (Expression.eval env a, Expression.eval env b) := by
-  simp only [eval_pair (α:=field) (β:=field), ProvableType.eval_field]
+  rw [eval_pair (α:=field) (β:=field)]; simp [ProvableType.eval_field]
 
 -- Specialized lemmas for Vector (Expression F) to handle type inference issues with vectors
 @[circuit_norm ↓ high]
@@ -653,8 +651,11 @@ omit [Field F] in
 theorem varFromOffset_pair {α β: TypeMap} [ProvableType α] [ProvableType β] (offset : ℕ) :
     varFromOffset (F:=F) (ProvablePair α β) offset
     = (varFromOffset α offset, varFromOffset β (offset + size α)) := by
-  simp only [varFromOffset, fromVars, ProvablePair.instance]
-  rw [Vector.mapRange_add_eq_append, Vector.cast_take_append_of_eq_length, Vector.cast_drop_append_of_eq_length]
+  simp only [varFromOffset, fromVars, size]
+  show @fromElements (ProvablePair α β) _ _ _ = _
+  simp only [fromElements, ProvablePair.instance]
+  erw [Vector.mapRange_add_eq_append,
+    Vector.cast_take_append_of_eq_length, Vector.cast_drop_append_of_eq_length]
   ac_rfl
 
 instance {α : TypeMap} [ProvableType α] : Zero (α F) where

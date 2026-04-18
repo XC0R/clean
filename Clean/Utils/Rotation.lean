@@ -8,11 +8,12 @@ open Bits (toBits toBits_injective)
 
 -- Theorems about 64-bit rotation
 
+set_option maxHeartbeats 400000 in
 /--
   Our definition of right rotation of a 64-bit integer is equal to
   the one provided by `BitVec.rotateRight`
 -/
-def rotRight64_eq_bv_rotate (x : ℕ) (h : x < 2^64) (offset : ℕ) :
+theorem rotRight64_eq_bv_rotate (x : ℕ) (h : x < 2^64) (offset : ℕ) :
     rotRight64 x offset = (x.toUInt64.toBitVec.rotateRight offset).toNat := by
   simp only [rotRight64]
   simp only [BitVec.toNat_rotateRight]
@@ -61,14 +62,12 @@ def rotRight64_eq_bv_rotate (x : ℕ) (h : x < 2^64) (offset : ℕ) :
       apply Nat.mod_lt offset (by linarith)
 
     have offset_bv_pos : offset_bv > 0 := by
-      simp only [Nat.toUInt64_eq, offset_bv]
-      have := Nat.pos_of_ne_zero cond
-      rw [gt_iff_lt, UInt64.lt_ofNat_iff]
-      simp only [UInt64.toNat_zero]
-      · assumption
-      · simp [UInt64.size]
-        have : offset % 64 < 64 := Nat.mod_lt offset (by linarith)
-        linarith
+      simp only [offset_bv, gt_iff_lt]
+      have h_pos := Nat.pos_of_ne_zero cond
+      have h_mod_lt : offset % 64 < 64 := Nat.mod_lt offset (by linarith)
+      rw [UInt64.lt_ofNat_iff]
+      · simp [UInt64.toNat_zero]; omega
+      · simp [UInt64.size]; omega
 
     specialize h_sat offset_bv_lt offset_bv_pos
     apply_fun UInt64.toNat at h_sat

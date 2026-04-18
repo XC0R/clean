@@ -3,7 +3,7 @@ import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.Normed.Ring.Lemmas
 
 -- main field definition
-def F p := ZMod p
+@[reducible] def F p := ZMod p
 instance (p : ℕ) [Fact p.Prime]: Field (F p) := ZMod.instField p
 instance (p : ℕ) [Fact p.Prime] : Fintype (F p) := ZMod.fintype p
 instance (p : ℕ) [Fact p.Prime] : Inhabited (F p) := ⟨0⟩
@@ -76,7 +76,7 @@ theorem natToField_zero : natToField 0 (p_prime.elim.pos) = 0 := by
   dsimp [natToField]
   cases p
   · exact False.elim (Nat.not_lt_zero 0 p_prime.elim.pos)
-  · simp only
+  · rfl
 
 theorem natToField_eq {n : ℕ} {lt : n < p} (x : F p) (hx : x = natToField n lt) : x.val = n := by
   cases p
@@ -93,7 +93,8 @@ theorem natToField_eq_natCast {n : ℕ} (lt : n < p) : ↑n = FieldUtils.natToFi
   | zero => exact False.elim (Nat.not_lt_zero n lt)
   | succ n' => {
     simp only [FieldUtils.natToField]
-    rw [Fin.natCast_eq_mk]
+    apply Fin.ext
+    exact ZMod.val_natCast_of_lt lt
   }
 
 theorem val_of_natToField_eq {n : ℕ} (lt : n < p) : (natToField n lt).val = n := by

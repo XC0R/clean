@@ -60,7 +60,7 @@ namespace Utils.StateTransition
 variable {S : Type*} [DecidableEq S] [Fintype S]
 
 /-- A transition from one state to another. -/
-def Transition (S : Type*) := S × S
+@[reducible] def Transition (S : Type*) := S × S
 
 instance [Fintype S] : Fintype (Transition S) := instFintypeProd S S
 
@@ -157,8 +157,7 @@ lemma path_has_transition {S : Type*} [DecidableEq S] (path : List S)
     cases tl with
     | nil => simp at h_len
     | cons hd2 tl2 =>
-      use (hd, hd2)
-      simp [List.zip, List.tail]
+      exact ⟨(hd, hd2), List.mem_cons_self ..⟩
 
 omit [Fintype S] in
 /-- If a path is contained in a run and uses a transition, that transition has positive capacity. -/
@@ -347,7 +346,7 @@ lemma acyclic_containsPath_nodup (R : Run S) (path : List S)
     containsPath_drop_take R path n.val (m.val - n.val + 1) h_contains
   -- This contradicts acyclicity
   unfold Run.isAcyclic Run.hasCycle at h_acyclic
-  push_neg at h_acyclic
+  push Not at h_acyclic
   apply h_acyclic cycle h_cycle_len h_cycle_starts_ends_with_x h_cycle_contained
 
 omit [Fintype S] in
@@ -362,15 +361,13 @@ lemma countTransitionInPath_append_singleton (path : List S) (x y : S)
   rw [List.cons_append, List.tail_cons]
   induction t' generalizing h with
   | nil =>
-    simp
     have : x = h := by simpa using h_last.symm
-    simp [this]
+    subst this; simp
   | cons h2 t2 ih =>
-    simp only [List.cons_append, List.zip_cons_cons, List.count_cons, beq_iff_eq]
+    simp only [List.cons_append, List.zip_cons_cons]
     by_cases h_eq : (h, h2) = (x, y)
     · aesop
     · simp [h_eq]
-      -- Now apply IH for h2 :: t2
       apply ih
       · simp
       · rw [← List.getLast?_cons_cons]; exact h_last
@@ -389,18 +386,14 @@ lemma countTransitionInPath_append_singleton_other (path : List S) (x y : S) (t 
   rw [List.cons_append, List.tail_cons]
   induction t' generalizing h with
   | nil =>
-    simp only [List.count, List.nil_append, List.zip_cons_cons, List.zip_nil_right,
-      List.countP_singleton, beq_iff_eq, List.tail_cons, List.countP_nil, ite_eq_right_iff,
-      one_ne_zero, imp_false]
-    intro h_eq; subst h_eq; simp at h_last; subst h_last; exact h_ne rfl
+    simp only [List.nil_append, List.zip_cons_cons, List.zip_nil_right, List.tail_cons]
+    have h_eq : x = h := by simpa using h_last.symm
+    subst h_eq; simp [Ne.symm h_ne]
   | cons h2 t2 ih =>
     rw [List.tail_cons]
-    simp only [List.cons_append, List.zip_cons_cons, List.count_cons, beq_iff_eq,
-      Nat.add_right_cancel_iff]
-    -- Now we need to apply IH for h2 :: t2
-    apply ih
-    · simp
-    · rw [← List.getLast?_cons_cons]; exact h_last
+    simp only [List.cons_append, List.zip_cons_cons, List.count_cons, List.tail_cons]
+    congr 1
+    exact ih h2 (by simp) (by rw [← List.getLast?_cons_cons]; exact h_last)
 
 /-- If a pair is in a zip, its first component is in the first list. -/
 lemma mem_of_mem_zip_fst {α β : Type*} (l1 : List α) (l2 : List β) (a : α) (b : β) :
@@ -729,19 +722,15 @@ omit [Fintype S] in
 /-- If a run has a self-loop, it contradicts acyclicity. -/
 lemma acyclic_no_self_loop (R : Run S) (s : S) (h_acyclic : R.isAcyclic) (h_edge : R (s, s) > 0) : False := by
   unfold Run.isAcyclic Run.hasCycle at h_acyclic
-  push_neg at h_acyclic
+  push Not at h_acyclic
   apply h_acyclic [s, s]
   · simp
   · simp
   · intro t
     unfold countTransitionInPath
-    simp only [List.zip, List.tail, List.zipWith_cons_cons, List.zipWith_nil_right]
     by_cases h_t : t = (s, s)
-    · subst h_t
-      simp only [List.count, BEq.rfl, List.countP_cons_of_pos, List.countP_nil, zero_add]
-      omega
-    · have : List.count t [(s, s)] = 0 := by aesop (add norm simp [List.count_cons, List.count_nil, beq_iff_eq])
-      omega
+    · subst h_t; simp [List.zip, List.tail, List.zipWith]; omega
+    · simp [List.zip, List.tail, List.zipWith, Ne.symm h_t]
 
 omit [Fintype S] in
 /-- The two-cycle path [a, b, a] contains the transitions (a,b) and (b,a) exactly once each. -/
@@ -751,34 +740,11 @@ lemma two_cycle_contains_both_edges (R : Run S) (a b : S)
     ∀ t : Transition S, countTransitionInPath t [a, b, a] ≤ R t := by
   intro t
   unfold countTransitionInPath
-  simp only [List.zip, List.tail, List.zipWith_cons_cons, List.zipWith_nil_right]
   by_cases h1 : t = (a, b)
-  · subst h1
-    simp only [List.count, BEq.rfl, List.countP_cons_of_pos, List.countP_singleton, beq_iff_eq]
-    have : ¬(b, a) = (a, b) := by
-      intro h_eq
-      have := Prod.mk_inj.mp h_eq
-      exact h_ne this.1.symm
-    simp only [this, ↓reduceIte, zero_add, ge_iff_le]
-    omega
+  · subst h1; simp [List.zip, List.tail, List.zipWith, Prod.mk.injEq, h_ne]; omega
   · by_cases h2 : t = (b, a)
-    · subst h2
-      simp only [List.count]
-      have : ¬(a, b) = (b, a) := by
-        intro h_eq
-        have := Prod.mk_inj.mp h_eq
-        exact h_ne this.1
-      simp only [beq_iff_eq, this, not_false_eq_true, List.countP_cons_of_neg, BEq.rfl,
-        List.countP_cons_of_pos, List.countP_nil, zero_add, ge_iff_le]
-      omega
-    · have : List.count t [(a, b), (b, a)] = 0 := by
-        simp only [List.count, List.countP_eq_zero, List.mem_cons, List.not_mem_nil, or_false,
-          beq_iff_eq, forall_eq_or_imp, forall_eq]
-        constructor
-        · intro h_eq; cases h_eq; exact h1 rfl
-        · intro h_eq; cases h_eq; exact h2 rfl
-      rw [this]
-      omega
+    · subst h2; simp [List.zip, List.tail, List.zipWith, Prod.mk.injEq, Ne.symm h_ne]; omega
+    · simp [List.zip, List.tail, List.zipWith, Ne.symm h1, Ne.symm h2]
 
 omit [Fintype S] in
 /-- If a run has a 2-cycle between distinct vertices, it contradicts acyclicity. -/
@@ -786,7 +752,7 @@ lemma acyclic_no_two_cycle (R : Run S) (a b : S)
     (h_acyclic : R.isAcyclic) (h_ne : a ≠ b)
     (h_edge1 : R (a, b) > 0) (h_edge2 : R (b, a) > 0) : False := by
   unfold Run.isAcyclic Run.hasCycle at h_acyclic
-  push_neg at h_acyclic
+  push Not at h_acyclic
   apply h_acyclic [a, b, a]
   · simp
   · simp
@@ -982,7 +948,7 @@ lemma acyclic_has_leaf_aux (R : Run S) (root current : S)
     · -- Show y has no outgoing edges
       intro z
       by_contra h_pos
-      push_neg at h_y_has_out
+      push Not at h_y_has_out
       -- If R(y,z) > 0, then by h_y_has_out, either z ∈ path or z = y
       have h_z_pos : R (y, z) > 0 := by omega
       have h_z_in_path_or_y : z ∈ path ∨ z = y := by grind
@@ -1134,7 +1100,7 @@ lemma positive_netFlow_has_outgoing_edge (R : Run S) (s : S)
     ∃ y, R (s, y) > 0 := by
   -- By contradiction: if all outgoing edges are 0, then netFlow ≤ 0
   by_contra h_none
-  push_neg at h_none
+  push Not at h_none
   -- All outgoing edges have capacity 0
   have h_outflow_zero : ∑ y : S, (R (s, y) : ℤ) = 0 := by
     apply sum_nat_cast_zero_of_not_pos
@@ -1179,7 +1145,7 @@ lemma path_distinct_head_last_length_ge_two {α : Type*} (path : List α) (x y :
     (h_ne : x ≠ y) :
     path.length ≥ 2 := by
   by_contra h_not
-  push_neg at h_not
+  push Not at h_not
   cases path with
   | nil => simp at h_nonempty
   | cons hd tl =>

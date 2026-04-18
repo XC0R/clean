@@ -66,8 +66,7 @@ instance elaborated [DecidableEq F] : ElaboratedCircuit F (Inputs M) M where
 theorem soundness [DecidableEq F] : Soundness F (elaborated (F:=F) (M:=M)) Assumptions Spec := by
   circuit_proof_start [output]
   rcases input
-  simp only [Inputs.mk.injEq] at h_input
-  rcases h_input with ⟨h_selector, h_ifTrue, h_ifFalse⟩
+  have ⟨h_selector, h_ifTrue, h_ifFalse⟩ := Inputs.mk.inj h_input
   simp only at h_assumptions
 
   -- Show that the result equals the conditional expression

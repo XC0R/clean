@@ -126,24 +126,22 @@ instance {value var : TypeMap} [ProvableType value] [inst : Witnessable F value 
   output_eq c n := by
     rw [inst.witness_eq]
     show _ = inst.var_eq ▸ (ProvableType.witness c).output n
-    rw [Circuit.output, Circuit.output, eqRec_eq_cast, eqRec_eq_cast,
+    erw [Circuit.output, Circuit.output, eqRec_eq_cast, eqRec_eq_cast,
       cast_fst, cast_apply (by rw [inst.var_eq])]
 
   localLength _ _ := size value
   localLength_eq c n := by
-    rw [inst.witness_eq, Circuit.localLength, eqRec_eq_cast,
-      cast_apply (by rw [inst.var_eq]), snd_cast (by rw [inst.var_eq])]
-    rfl
+    erw [inst.witness_eq, Circuit.localLength, eqRec_eq_cast,
+      cast_apply (by rw [inst.var_eq]), snd_cast (by rw [inst.var_eq])]; rfl
 
   operations c n := [.witness (size value) (toElements ∘ c)]
   operations_eq c n := by
-    rw [inst.witness_eq, Circuit.operations, eqRec_eq_cast, cast_apply (by rw [inst.var_eq]),
-      snd_cast (by rw [inst.var_eq])]
-    rfl
+    erw [inst.witness_eq, Circuit.operations, eqRec_eq_cast, cast_apply (by rw [inst.var_eq]),
+      snd_cast (by rw [inst.var_eq])]; rfl
 
   subcircuitsConsistent c n := by
     simp only [circuit_norm]
-    rw [inst.witness_eq, eqRec_eq_cast, cast_apply (by rw [inst.var_eq]),
+    erw [inst.witness_eq, eqRec_eq_cast, cast_apply (by rw [inst.var_eq]),
       snd_cast (by rw [inst.var_eq])]
     reduce
     trivial
