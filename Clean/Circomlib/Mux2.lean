@@ -19,6 +19,11 @@ structure Inputs (n : ℕ) (F : Type) where
   c : ProvableVector (fields 4) n F  -- n vectors of 4 constants each
   s : Vector F 2                      -- 2-bit selector
 deriving ProvableStruct
+
+@[simp, circuit_norm] lemma Inputs.fromComponents_reduce {n : ℕ} {F : Type}
+    (c : ProvableVector (fields 4) n F) (s : Vector F 2) :
+    @fromComponents (Inputs n) _ F (.cons c (.cons s .nil)) = ⟨c, s⟩ := rfl
+
 /-
 template MultiMux2(n) {
     signal input c[n][4];  // Constants
@@ -99,36 +104,29 @@ def circuit (n : ℕ) : FormalCircuit (F p) (Inputs n) (fields n) where
     simp only [h_output_i]
 
     rw [← h_input] at h_assumptions ⊢
-    -- Extract boolean assumptions
+    simp only [Inputs.fromComponents_reduce] at h_assumptions ⊢
     obtain ⟨h_s0, h_s1⟩ := h_assumptions
 
     simp only [Vector.getElem_map] at h_s0 h_s1
-    simp only [Vector.getElem_map]
-
-    -- Case analysis on s[0] and s[1]
     cases h_s0 <;> cases h_s1 <;>
       (rename_i h_s0 h_s1
-       simp only [h_s0, h_s1, h_s10, circuit_norm]
-       norm_num
-       rw [ProvableType.getElem_eval_fields, getElem_eval_vector])
-
-    ring_nf
+       simp only [h_s0, h_s1, h_s10, ← getElem_eval_vector, ← ProvableType.getElem_eval_fields,
+         Vector.getElem_map, show (0 : F p) ≠ 1 from by norm_num,
+         show (1 : F p) ≠ 0 from by norm_num, ite_true, ite_false, if_pos, if_neg]
+       ring)
 
   completeness := by
     circuit_proof_start
     obtain ⟨_, h_env⟩ := h_env
     constructor
     · assumption
-    · -- We need to show that the witnessed values equal the computed expressions
-      ext i hi
-      -- Left side: eval of varFromOffset
-      simp only [Vector.getElem_map, Vector.getElem_mapRange]
-      -- Now simplify the left side: Expression.eval env (var { index := offset + 1 * i })
-      simp only [Expression.eval]
-      -- Right side: eval of the computed expression
+    · ext i hi
+      simp only [Vector.getElem_map, Vector.getElem_mapRange, Expression.eval, circuit_norm]
       have h_env_i := h_env ⟨i, hi⟩
+      simp only [toElements, Vector.getElem_map, Function.comp] at h_env_i
       rw [h_env_i]
-      norm_num
+      simp only [Expression.eval]
+      ring
 
 end MultiMux2
 
@@ -138,6 +136,10 @@ structure Inputs (F : Type) where
   c : Vector F 4  -- 4 constants
   s : Vector F 2  -- 2-bit selector
 deriving ProvableStruct
+
+@[simp, circuit_norm] lemma Inputs.fromComponents_reduce {F : Type} (c : Vector F 4) (s : Vector F 2) :
+    @fromComponents Inputs _ F (.cons c (.cons s .nil)) = ⟨c, s⟩ := rfl
+
 /-
 template Mux2() {
     var i;
@@ -195,22 +197,21 @@ def circuit : FormalCircuit (F p) Inputs field where
   soundness := by
     simp only [circuit_norm, main]
     intro _ _ _ input h_input h_assumptions h_subcircuit_sound
-    rw [← h_input] at *
-    clear input h_input
-    simp only [MultiMux2.circuit, circuit_norm] at h_subcircuit_sound h_assumptions ⊢
+    rw [← h_input] at *; clear input h_input
+    simp only [MultiMux2.circuit, circuit_norm, Inputs.fromComponents_reduce,
+      MultiMux2.Inputs.fromComponents_reduce] at h_subcircuit_sound h_assumptions ⊢
     specialize h_subcircuit_sound h_assumptions 0 (by omega)
     rw [h_subcircuit_sound]
-    -- Now we need to show the RHS equals our spec
-    -- First, simplify the evaluation of the vector
-    simp only [eval_vector, Vector.getElem_mk, List.getElem_toArray,
-               List.getElem_cons_zero, circuit_norm]
+    simp only [eval_vector, Vector.getElem_map, circuit_norm]
 
   completeness := by
     simp only [circuit_norm, main]
     intro offset env input_var h_env input h_input h_s
-    simp only [MultiMux2.circuit, circuit_norm]
+    simp only [MultiMux2.circuit, circuit_norm, Inputs.fromComponents_reduce,
+      MultiMux2.Inputs.fromComponents_reduce]
     rw [← h_input] at h_s
-    simp_all
+    simp only [Inputs.fromComponents_reduce, Vector.getElem_map] at h_s
+    exact h_s
 
 end Mux2
 

@@ -1,0 +1,134 @@
+✖ [816/816] Building Clean.Utils.SourceSinkPath (1.8s)
+trace: .> LEAN_PATH=/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Cli/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/batteries/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Qq/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/aesop/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/plausible/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean /Users/sentientapple2/.elan/toolchains/leanprover--lean4---v4.29.0/bin/lean /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/Clean/Utils/SourceSinkPath.lean -o /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Utils/SourceSinkPath.olean -i /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Utils/SourceSinkPath.ilean -c /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Utils/SourceSinkPath.c --setup /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Utils/SourceSinkPath.setup.json --json
+error: Clean/Utils/SourceSinkPath.lean:391:10: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case nil
+S : Type u_1
+inst✝ : DecidableEq S
+x y : S
+t : Transition S
+h_ne : t ≠ (x, y)
+h : S
+h_nonempty : [h] ≠ []
+h_last : [h].getLast? = some x
+⊢ List.count t [(h, y)] = 0
+error: Clean/Utils/SourceSinkPath.lean:392:18: unsolved goals
+case cons
+S : Type u_1
+inst✝ : DecidableEq S
+x y : S
+t : Transition S
+h_ne : t ≠ (x, y)
+h2 : S
+t2 : List S
+ih :
+  ∀ (h : S),
+    h :: t2 ≠ [] →
+      (h :: t2).getLast? = some x →
+        List.count t ((h :: (t2 ++ [y])).zip (t2 ++ [y])) = List.count t ((h :: t2).zip (h :: t2).tail)
+h : S
+h_nonempty : h :: h2 :: t2 ≠ []
+h_last : (h :: h2 :: t2).getLast? = some x
+this : List.count t ((h2 :: (t2 ++ [y])).zip (t2 ++ [y])) = List.count t ((h2 :: t2).zip (h2 :: t2).tail)
+⊢ (List.count t ((h2 :: t2).zip (h2 :: t2).tail) + if ((h, h2) == t) = true then 1 else 0) =
+    List.count t ((h2 :: t2).zip t2) + if ((h, h2) == t) = true then 1 else 0
+warning: Clean/Utils/SourceSinkPath.lean:390:10: This simp argument is unused:
+  List.zip
+
+Hint: Omit it from the simp argument list.
+  simp [̵L̵i̵s̵t̵.̵z̵i̵p̵,̵ ̵L̵i̵s̵t̵.̵t̵a̵i̵l̵,̵[̲L̲i̲s̲t̲.̲t̲a̲i̲l̲,̲ List.zipWith]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:390:20: This simp argument is unused:
+  List.tail
+
+Hint: Omit it from the simp argument list.
+  simp [List.zip, List.t̵a̵i̵l̵,̵ ̵L̵i̵s̵t̵.̵zipWith]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:390:31: This simp argument is unused:
+  List.zipWith
+
+Hint: Omit it from the simp argument list.
+  simp [List.zip, List.tail,̵ ̵L̵i̵s̵t̵.̵z̵i̵p̵W̵i̵t̵h̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Clean/Utils/SourceSinkPath.lean:733:4: unsolved goals
+case pos
+S : Type u_1
+inst✝ : DecidableEq S
+R : Run S
+s : S
+h_edge : R (s, s) > 0
+h_acyclic : ∀ (cycle : List S), cycle.length ≥ 2 → cycle.head? = cycle.getLast? → ¬R.containsPath cycle
+⊢ 1 ≤ R (s, s)
+error: Clean/Utils/SourceSinkPath.lean:734:4: unsolved goals
+case neg
+S : Type u_1
+inst✝ : DecidableEq S
+R : Run S
+s : S
+h_edge : R (s, s) > 0
+h_acyclic : ∀ (cycle : List S), cycle.length ≥ 2 → cycle.head? = cycle.getLast? → ¬R.containsPath cycle
+t : Transition S
+h_t : ¬t = (s, s)
+⊢ List.count t [(s, s)] ≤ R t
+warning: Clean/Utils/SourceSinkPath.lean:734:47: This simp argument is unused:
+  h_t
+
+Hint: Omit it from the simp argument list.
+  simp [List.zip, List.tail, List.zipWith,̵ ̵h̵_̵t̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Clean/Utils/SourceSinkPath.lean:745:2: unsolved goals
+case pos
+S : Type u_1
+inst✝ : DecidableEq S
+R : Run S
+a b : S
+h_ne : a ≠ b
+h_edge1 : R (a, b) > 0
+h_edge2 : R (b, a) > 0
+⊢ 1 ≤ R (a, b)
+error: Clean/Utils/SourceSinkPath.lean:747:4: unsolved goals
+case pos
+S : Type u_1
+inst✝ : DecidableEq S
+R : Run S
+a b : S
+h_ne : a ≠ b
+h_edge1 : R (a, b) > 0
+h_edge2 : R (b, a) > 0
+h1 : ¬(b, a) = (a, b)
+⊢ 1 ≤ R (b, a)
+error: Clean/Utils/SourceSinkPath.lean:748:4: unsolved goals
+case neg
+S : Type u_1
+inst✝ : DecidableEq S
+R : Run S
+a b : S
+h_ne : a ≠ b
+h_edge1 : R (a, b) > 0
+h_edge2 : R (b, a) > 0
+t : Transition S
+h1 : ¬t = (a, b)
+h2 : ¬t = (b, a)
+⊢ List.count t [(a, b), (b, a)] ≤ R t
+warning: Clean/Utils/SourceSinkPath.lean:748:47: This simp argument is unused:
+  h1
+
+Hint: Omit it from the simp argument list.
+  simp [List.zip, List.tail, List.zipWith, h1̵,̵ ̵h̵2]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:748:51: This simp argument is unused:
+  h2
+
+Hint: Omit it from the simp argument list.
+  simp [List.zip, List.tail, List.zipWith, h1,̵ ̵h̵2̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- Clean.Utils.SourceSinkPath
+error: build failed

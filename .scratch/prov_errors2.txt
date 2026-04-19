@@ -1,0 +1,87 @@
+✖ [1637/1637] Building Clean.Circuit.Provable (2.1s)
+trace: .> LEAN_PATH=/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Cli/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/batteries/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Qq/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/aesop/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/plausible/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean /Users/sentientapple2/.elan/toolchains/leanprover--lean4---v4.29.0/bin/lean /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/Clean/Circuit/Provable.lean -o /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Circuit/Provable.olean -i /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Circuit/Provable.ilean -c /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Circuit/Provable.c --setup /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Circuit/Provable.setup.json --json
+error: Clean/Circuit/Provable.lean:492:50: unsolved goals
+F : Type
+inst✝ : Field F
+n : ℕ
+env : Environment F
+x : Var (fields n) F
+i : ℕ
+hi : i < n
+⊢ Expression.eval env x[i] = Expression.eval env (toElements x)[i]
+error: Clean/Circuit/Provable.lean:563:18: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  Vector.mapRange ?m.142 ?create ++ Vector.mapRange ?m.143 fun i ↦ ?create (?m.142 + i)
+in the target expression
+  (Vector.mapRange ((n + 1) * size α) fun i ↦ var { index := offset + i }) =
+    Vector.cast ⋯
+      ((Vector.mapRange (n * size α) fun i ↦ var { index := offset + i }) ++
+        Vector.mapRange (size α) fun i ↦ create (n * size α + i))
+
+case succ.e_xs.e_v
+n✝ : ℕ
+F : Type
+inst✝¹ : Field F
+α : TypeMap
+inst✝ : NonEmptyProvableType α
+offset n : ℕ
+ih : varFromOffset (ProvableVector α n) offset = Vector.mapRange n fun i ↦ varFromOffset α (offset + size α * i)
+create : ℕ → Expression F := fun i ↦ var { index := offset + i }
+h_create : (fun i ↦ var { index := offset + (n * size α + i) }) = fun i ↦ create (n * size α + i)
+⊢ (Vector.mapRange ((n + 1) * size α) fun i ↦ var { index := offset + i }) =
+    Vector.cast ⋯
+      ((Vector.mapRange (n * size α) fun i ↦ var { index := offset + i }) ++
+        Vector.mapRange (size α) fun i ↦ create (n * size α + i))
+error: Clean/Circuit/Provable.lean:615:87: unsolved goals
+F : Type
+inst✝¹ : Field F
+β : TypeMap
+inst✝ : ProvableType β
+env : Environment F
+a : Expression F
+b : Var β F
+⊢ (Expression.eval env a, eval env b) = (Expression.eval env a, eval env b)
+error: Clean/Circuit/Provable.lean:621:87: unsolved goals
+F : Type
+inst✝¹ : Field F
+α : TypeMap
+inst✝ : ProvableType α
+env : Environment F
+a : Var α F
+b : Expression F
+⊢ (eval env a, Expression.eval env b) = (eval env a, Expression.eval env b)
+error: Clean/Circuit/Provable.lean:627:102: unsolved goals
+F : Type
+inst✝ : Field F
+env : Environment F
+a b : Expression F
+⊢ (Expression.eval env a, Expression.eval env b) = (Expression.eval env a, Expression.eval env b)
+error: Clean/Circuit/Provable.lean:655:38: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  Vector.cast ⋯ ((?m.24 ++ ?m.25).take ?m.22)
+in the target expression
+  fromElements
+      ((Vector.mapRange (size α) fun i ↦ var { index := offset + i }) ++
+        Vector.mapRange (size β) fun i ↦ var { index := offset + (size α + i) }) =
+    (fromElements (Vector.mapRange (size α) fun i ↦ var { index := offset + i }),
+      fromElements (Vector.mapRange (size β) fun i ↦ var { index := offset + size α + i }))
+
+F : Type
+α β : TypeMap
+inst✝¹ : ProvableType α
+inst✝ : ProvableType β
+offset : ℕ
+⊢ fromElements
+      ((Vector.mapRange (size α) fun i ↦ var { index := offset + i }) ++
+        Vector.mapRange (size β) fun i ↦ var { index := offset + (size α + i) }) =
+    (fromElements (Vector.mapRange (size α) fun i ↦ var { index := offset + i }),
+      fromElements (Vector.mapRange (size β) fun i ↦ var { index := offset + size α + i }))
+warning: Clean/Circuit/Provable.lean:654:38: This simp argument is unused:
+  ProvablePair.instance
+
+Hint: Omit it from the simp argument list.
+  simp only [varFromOffset, fromVars,̵ ̵P̵r̵o̵v̵a̵b̵l̵e̵P̵a̵i̵r̵.̵i̵n̵s̵t̵a̵n̵c̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- Clean.Circuit.Provable
+error: build failed

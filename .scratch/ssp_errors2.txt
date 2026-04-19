@@ -1,0 +1,85 @@
+✖ [816/816] Building Clean.Utils.SourceSinkPath (1.8s)
+trace: .> LEAN_PATH=/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Cli/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/batteries/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Qq/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/aesop/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/plausible/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean /Users/sentientapple2/.elan/toolchains/leanprover--lean4---v4.29.0/bin/lean /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/Clean/Utils/SourceSinkPath.lean -o /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Utils/SourceSinkPath.olean -i /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Utils/SourceSinkPath.ilean -c /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Utils/SourceSinkPath.c --setup /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Utils/SourceSinkPath.setup.json --json
+error: Clean/Utils/SourceSinkPath.lean:363:8: unsolved goals
+case nil
+S : Type u_1
+inst✝ : DecidableEq S
+x y : S
+h_nonempty : [x] ≠ []
+h_last : [x].getLast? = some x
+h_not_in : (x, y) ∉ [x].zip [x].tail
+⊢ List.count (x, y) [(x, y)] = 1
+error: Clean/Utils/SourceSinkPath.lean:371:6: `simp` made no progress
+warning: Clean/Utils/SourceSinkPath.lean:366:10: This simp argument is unused:
+  List.count_nil
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵n̵i̵l̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:368:53: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [List.cons_append, List.zip_cons_cons,̵ ̵L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Clean/Utils/SourceSinkPath.lean:391:4: `simp` made no progress
+error: Clean/Utils/SourceSinkPath.lean:398:4: Tactic `apply` failed: could not unify the conclusion of `ih`
+  Eq.{1} (List.count t ((?h :: (t2 ++ [y])).zip (t2 ++ [y]))) (List.count t ((?h :: t2).zip (?h :: t2).tail))
+with the goal
+  Eq.{u_1 + 1} ((h, h2) :: (h2 :: (t2 ++ [y])).zip (t2 ++ [y])) ((h, h2) :: (h2 :: t2).zip t2)
+
+Note: The full type of `ih` is
+  ∀ (h : S),
+    h :: t2 ≠ [] →
+      (h :: t2).getLast? = some x →
+        List.count t ((h :: (t2 ++ [y])).zip (t2 ++ [y])) = List.count t ((h :: t2).zip (h :: t2).tail)
+
+case cons.e_a
+S : Type u_1
+inst✝ : DecidableEq S
+x y : S
+t : Transition S
+h_ne : t ≠ (x, y)
+h2 : S
+t2 : List S
+ih :
+  ∀ (h : S),
+    h :: t2 ≠ [] →
+      (h :: t2).getLast? = some x →
+        List.count t ((h :: (t2 ++ [y])).zip (t2 ++ [y])) = List.count t ((h :: t2).zip (h :: t2).tail)
+h : S
+h_nonempty : h :: h2 :: t2 ≠ []
+h_last : (h :: h2 :: t2).getLast? = some x
+⊢ (h, h2) :: (h2 :: (t2 ++ [y])).zip (t2 ++ [y]) = (h, h2) :: (h2 :: t2).zip t2
+warning: Clean/Utils/SourceSinkPath.lean:396:53: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [List.cons_append, List.zip_cons_cons,̵ ̵L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Clean/Utils/SourceSinkPath.lean:694:4: `simp` made no progress
+error: Clean/Utils/SourceSinkPath.lean:737:17: `simp` made no progress
+error: Clean/Utils/SourceSinkPath.lean:738:6: `simp` made no progress
+error: Clean/Utils/SourceSinkPath.lean:751:4: `simp` made no progress
+error: Clean/Utils/SourceSinkPath.lean:754:6: `simp` made no progress
+error: Clean/Utils/SourceSinkPath.lean:755:6: `simp` made no progress
+error: Clean/Utils/SourceSinkPath.lean:1020:50: unsolved goals
+S : Type u_1
+inst✝¹ : DecidableEq S
+inst✝ : Fintype S
+R : Run S
+root : S
+h_acyclic : R.isAcyclic
+h_has_out : ∃ y, R (root, y) > 0
+h_root_start : [root].head? = some root
+h_root_end : [root].getLast? = some root
+h_root_nonempty : [root] ≠ []
+t : Transition S
+⊢ List.count t [] ≤ R t
+error: Lean exited with code 1
+Some required targets logged failures:
+- Clean.Utils.SourceSinkPath
+error: build failed

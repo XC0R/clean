@@ -1,0 +1,4 @@
+-- Quick check: what does h_input look like after rcases input?
+-- rcases input gives the destructured Inputs structure
+-- h_input is probably ProvablePair equality
+-- Need to check with the actual types

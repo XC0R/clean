@@ -1,0 +1,686 @@
+✔ [1649/1774] Built Clean.Table.SimpTable (445ms)
+✔ [1650/1774] Built Clean.Circuit.SimpGadget (804ms)
+✔ [1651/1774] Built Clean.Utils.Tactics.ProvableStructNaming (2.4s)
+✔ [1652/1774] Built Clean.Utils.Tactics.SpecializeAuto (2.4s)
+✔ [1653/1774] Built Clean.Circuit.Expression (2.1s)
+✔ [1654/1774] Built Clean.Utils.Misc (2.7s)
+✔ [1655/1774] Built Clean.Utils.Primes (2.7s)
+✔ [1656/1774] Built Clean.Utils.Fin (2.8s)
+✖ [1657/1774] Building Clean.Utils.Field (3.2s)
+trace: .> LEAN_PATH=/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Cli/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/batteries/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Qq/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/aesop/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/plausible/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean /Users/sentientapple2/.elan/toolchains/leanprover--lean4---v4.29.0/bin/lean /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/Clean/Utils/Field.lean -o /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Utils/Field.olean -i /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Utils/Field.ilean -c /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Utils/Field.c --setup /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Utils/Field.setup.json --json
+error: Clean/Utils/Field.lean:32:6: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (↑?a).val
+in the target expression
+  ZMod.val ↑x = x
+
+p x : ℕ
+x_lt_p : x < p
+p_ne_zero : p ≠ 0
+x_mod_is_x : x % p = x
+⊢ ZMod.val ↑x = x
+error: Clean/Utils/Field.lean:68:50: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ?m.40 % ?m.41
+in the target expression
+  ZMod.val (x + y * 256) = ZMod.val x + ZMod.val y * 256
+
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+inst✝ : Fact (p > 512)
+x y : F p
+hx : ZMod.val x < 256
+hy : ZMod.val y < 2
+⊢ ZMod.val (x + y * 256) = ZMod.val x + ZMod.val y * 256
+error: Clean/Utils/Field.lean:79:2: unsolved goals
+case succ
+n✝ : ℕ
+p_prime : Fact (Nat.Prime (n✝ + 1))
+⊢ 0 = 0
+error: Clean/Utils/Field.lean:96:8: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ↑?m.43
+in the target expression
+  ↑n = ⟨n, lt⟩
+
+case succ
+n n' : ℕ
+p_prime : Fact (Nat.Prime (n' + 1))
+lt : n < n' + 1
+⊢ ↑n = ⟨n, lt⟩
+error: Clean/Utils/Field.lean:127:6: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (?a * ?b).val
+in the target expression
+  ZMod.val (↑↑c * floorDiv x c) = ↑c * (ZMod.val x / ↑c)
+
+case succ
+c : ℕ+
+n : ℕ
+p_prime : Fact (Nat.Prime (n + 1))
+x : F (n + 1)
+lt : ↑c < n + 1
+this : ↑c * (ZMod.val x / ↑c) ≤ ZMod.val x
+h : ZMod.val x < n + 1
+⊢ ZMod.val (↑↑c * floorDiv x c) = ↑c * (ZMod.val x / ↑c)
+error: Clean/Utils/Field.lean:137:9: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (?m.97 + ?m.98).val
+in the target expression
+  ZMod.val (mod x c lt + ↑↑c * floorDiv x c) = ZMod.val x
+
+c : ℕ+
+n : ℕ
+p_prime : Fact (Nat.Prime (n + 1))
+x : F (n + 1)
+lt : ↑c < n + 1
+h : ZMod.val x < n + 1
+this : ZMod.val (mod x c lt) + ZMod.val (↑↑c * floorDiv x c) = ZMod.val x
+⊢ ZMod.val (mod x c lt + ↑↑c * floorDiv x c) = ZMod.val x
+error: Clean/Utils/Field.lean:144:2: unsolved goals
+case pos
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+x : F p
+⊢ ZMod.val 0 = ZMod.val 0 * ZMod.val x
+error: Clean/Utils/Field.lean:168:46: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (↑c).val
+in the target expression
+  c = ZMod.val ↑c
+
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+x : F p
+c : ℕ
+c_lt : c < p
+z : ℕ
+⊢ c = ZMod.val ↑c
+error: Clean/Utils/Field.lean:183:48: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (↑c).val
+in the target expression
+  c = ZMod.val ↑c
+
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+x : F p
+c : ℕ
+c_pos : c > 0
+c_lt : c < p
+z : ℕ
+h_eq : ZMod.val x = z
+h_lt : c * ZMod.val x < p
+⊢ c = ZMod.val ↑c
+error: Clean/Utils/Field.lean:184:15: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (?m.91 * ?m.92).val
+in the target expression
+  ZMod.val (↑c * x) = c * ZMod.val x
+
+case mpr
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+x : F p
+c : ℕ
+c_pos : c > 0
+c_lt : c < p
+z : ℕ
+h_eq : ZMod.val x = z
+h_lt : c * ZMod.val x < p
+c_val_eq : c = ZMod.val ↑c
+⊢ ZMod.val (↑c * x) = c * ZMod.val x
+error: Clean/Utils/Field.lean:206:6: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (?m.26 ^ ?m.24).val
+in the target expression
+  ZMod.val (2 ^ n) = 2 ^ n
+
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+inst✝ : Fact (p > 512)
+n : ℕ
+hn : n ≤ 8
+⊢ ZMod.val (2 ^ n) = 2 ^ n
+error: Clean/Utils/Field.lean:233:51: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ZMod.val 1
+in the target expression
+  1 = ZMod.val 1
+
+case succ.inr.inl.h.h
+n : ℕ
+p_prime : Fact (Nat.Prime (n + 1))
+inst✝ : Fact (n + 1 > 512)
+x : F (n + 1)
+h : ZMod.val x < 512
+z : ℕ := ZMod.val x / 256
+this : z < 2
+h1 : z = 1
+⊢ 1 = ZMod.val 1
+error: Clean/Utils/Field.lean:240:6: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (?a + ?b).val
+in the target expression
+  ZMod.val x = ZMod.val (mod256 x + 256 * floorDiv256 x)
+
+case succ.h
+n : ℕ
+p_prime : Fact (Nat.Prime (n + 1))
+inst✝ : Fact (n + 1 > 512)
+x : F (n + 1)
+p : ℕ := ⋯
+⊢ ZMod.val x = ZMod.val (mod256 x + 256 * floorDiv256 x)
+error: Clean/Utils/Field.lean:271:68: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ?m.30 % ?m.31
+in the target expression
+  ZMod.val (x + y) = ZMod.val x + ZMod.val y
+
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+x y : F p
+inst✝ : Fact (p > 512)
+a✝¹ : ZMod.val x < 256
+a✝ : ZMod.val y < 256
+⊢ ZMod.val (x + y) = ZMod.val x + ZMod.val y
+error: Clean/Utils/Field.lean:274:58: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ?m.27 % ?m.28
+in the target expression
+  ZMod.val (x + y) < 511
+
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+x y : F p
+inst✝ : Fact (p > 512)
+a✝¹ : ZMod.val x < 256
+a✝ : ZMod.val y < 256
+⊢ ZMod.val (x + y) < 511
+error: Clean/Utils/Field.lean:277:93: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ?m.44 % ?m.45
+in the target expression
+  ZMod.val (b + x + y) = ZMod.val b + ZMod.val x + ZMod.val y
+
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+x y b : F p
+inst✝ : Fact (p > 512)
+a✝² : ZMod.val x < 256
+a✝¹ : ZMod.val y < 256
+a✝ : ZMod.val b < 2
+⊢ ZMod.val (b + x + y) = ZMod.val b + ZMod.val x + ZMod.val y
+error: Clean/Utils/Field.lean:280:93: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ?m.44 % ?m.45
+in the target expression
+  ZMod.val (x + y + b) = ZMod.val x + ZMod.val y + ZMod.val b
+
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+x y b : F p
+inst✝ : Fact (p > 512)
+a✝² : ZMod.val x < 256
+a✝¹ : ZMod.val y < 256
+a✝ : ZMod.val b < 2
+⊢ ZMod.val (x + y + b) = ZMod.val x + ZMod.val y + ZMod.val b
+error: Clean/Utils/Field.lean:283:75: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ?m.36 % ?m.37
+in the target expression
+  ZMod.val (x + y + b) < 512
+
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+x y b : F p
+inst✝ : Fact (p > 512)
+a✝² : ZMod.val x < 256
+a✝¹ : ZMod.val y < 256
+a✝ : ZMod.val b < 2
+⊢ ZMod.val (x + y + b) < 512
+error: Clean/Utils/Field.lean:286:53: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ?m.28 % ?m.29
+in the target expression
+  ZMod.val (x + 256) = ZMod.val x + 256
+
+p : ℕ
+p_prime : Fact (Nat.Prime p)
+x : F p
+inst✝ : Fact (p > 512)
+a✝ : ZMod.val x < 256
+⊢ ZMod.val (x + 256) = ZMod.val x + 256
+error: Lean exited with code 1
+✖ [1660/1774] Building Clean.Utils.Vector (3.4s)
+trace: .> LEAN_PATH=/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Cli/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/batteries/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Qq/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/aesop/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/plausible/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean /Users/sentientapple2/.elan/toolchains/leanprover--lean4---v4.29.0/bin/lean /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/Clean/Utils/Vector.lean -o /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Utils/Vector.olean -i /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Utils/Vector.ilean -c /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Utils/Vector.c --setup /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Utils/Vector.setup.json --json
+error: Clean/Utils/Vector.lean:132:6: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  @Eq ?m.39 (cast ?m.40 ?m.41) ?m.42
+in the target expression
+  @Eq (motive (listCons x (xs.push a)))
+    (cast ⋯
+      (push' (mk { toList := x :: (xs.push a).toList } ⋯).toPush.fst
+        (mk { toList := x :: (xs.push a).toList } ⋯).toPush.2.fst
+        (inductPush nil (fun {n} ↦ push') (mk { toList := x :: (xs.push a).toList } ⋯).toPush.fst)))
+    (push' (listCons x xs) a (inductPush nil (fun {n} ↦ push') (listCons x xs)))
+
+α : Type
+motive : {n : ℕ} → Vector α n → Sort u
+nil : motive #v[]
+push' : {n : ℕ} → (as : Vector α n) → (a : α) → motive as → motive (as.push a)
+n : ℕ
+xs : Vector α n
+x a : α
+⊢ cast ⋯
+      (push' (mk { toList := x :: (xs.push a).toList } ⋯).toPush.fst
+        (mk { toList := x :: (xs.push a).toList } ⋯).toPush.2.fst
+        (inductPush nil (fun {n} ↦ push') (mk { toList := x :: (xs.push a).toList } ⋯).toPush.fst)) =
+    push' (listCons x xs) a (inductPush nil (fun {n} ↦ push') (listCons x xs))
+warning: Clean/Utils/Vector.lean:250:4: `List.extract_eq_drop_take` has been deprecated: Use `List.extract_eq_take_drop` instead
+
+Note: The updated constant has a different type:
+  ∀ {α : Type u} {l : List α} {start stop : ℕ}, l.extract start stop = List.take (stop - start) (List.drop start l)
+instead of
+  ∀ {α : Type u_1} {l : List α} {start stop : ℕ}, l.extract start stop = List.take (stop - start) (List.drop start l)
+warning: Clean/Utils/Vector.lean:260:4: `List.extract_eq_drop_take` has been deprecated: Use `List.extract_eq_take_drop` instead
+
+Note: The updated constant has a different type:
+  ∀ {α : Type u} {l : List α} {start stop : ℕ}, l.extract start stop = List.take (stop - start) (List.drop start l)
+instead of
+  ∀ {α : Type u_1} {l : List α} {start stop : ℕ}, l.extract start stop = List.take (stop - start) (List.drop start l)
+error: Lean exited with code 1
+✖ [1772/1774] Building Clean.Utils.SourceSinkPath (3.4s)
+trace: .> LEAN_PATH=/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Cli/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/batteries/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/Qq/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/aesop/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/plausible/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean /Users/sentientapple2/.elan/toolchains/leanprover--lean4---v4.29.0/bin/lean /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/Clean/Utils/SourceSinkPath.lean -o /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Utils/SourceSinkPath.olean -i /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/lib/lean/Clean/Utils/SourceSinkPath.ilean -c /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Utils/SourceSinkPath.c --setup /Users/sentientapple2/ollama_network/meshcluster_mgmt/proof_lab/external_repos/clean/.lake/build/ir/Clean/Utils/SourceSinkPath.setup.json --json
+error: Clean/Utils/SourceSinkPath.lean:159:19: unsolved goals
+case h
+S : Type u_2
+inst✝ : DecidableEq S
+hd hd2 : S
+tl2 : List S
+h_len : (hd :: hd2 :: tl2).length ≥ 2
+⊢ (hd, hd2) ∈ (hd, hd2) :: List.zipWith Prod.mk (hd2 :: tl2) tl2
+warning: Clean/Utils/SourceSinkPath.lean:350:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+error: Clean/Utils/SourceSinkPath.lean:364:8: unsolved goals
+case nil
+S : Type u_1
+inst✝ : DecidableEq S
+x y h : S
+h_nonempty : [h] ≠ []
+h_last : [h].getLast? = some x
+h_not_in : (x, y) ∉ [h].zip [h].tail
+this : x = h
+⊢ List.count (h, y) [(h, y)] = 1
+error: Clean/Utils/SourceSinkPath.lean:372:6: `simp` made no progress
+warning: Clean/Utils/SourceSinkPath.lean:369:53: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [List.cons_append, List.zip_cons_cons, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵beq_iff_eq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:369:70: This simp argument is unused:
+  beq_iff_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [List.cons_append, List.zip_cons_cons, List.count_cons,̵ ̵b̵e̵q̵_̵i̵f̵f̵_̵e̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Clean/Utils/SourceSinkPath.lean:395:10: Tactic `introN` failed: There are no additional binders or `let` bindings in the goal to introduce
+
+case nil
+S : Type u_1
+inst✝ : DecidableEq S
+x y : S
+t : Transition S
+h_ne : t ≠ (x, y)
+h : S
+h_nonempty : [h] ≠ []
+h_last : [h].getLast? = some x
+⊢ List.countP (fun x ↦ x == t) [(h, y)] = List.countP (fun x ↦ x == t) []
+error: Clean/Utils/SourceSinkPath.lean:401:4: Tactic `apply` failed: could not unify the conclusion of `ih`
+  List.count t ((?h :: (t2 ++ [y])).zip (t2 ++ [y])) = List.count t ((?h :: t2).zip (?h :: t2).tail)
+with the goal
+  List.count t ((h, h2) :: (h2 :: (t2 ++ [y])).zip (t2 ++ [y])) = List.count t ((h, h2) :: (h2 :: t2).zip t2)
+
+Note: The full type of `ih` is
+  ∀ (h : S),
+    h :: t2 ≠ [] →
+      (h :: t2).getLast? = some x →
+        List.count t ((h :: (t2 ++ [y])).zip (t2 ++ [y])) = List.count t ((h :: t2).zip (h :: t2).tail)
+
+case cons
+S : Type u_1
+inst✝ : DecidableEq S
+x y : S
+t : Transition S
+h_ne : t ≠ (x, y)
+h2 : S
+t2 : List S
+ih :
+  ∀ (h : S),
+    h :: t2 ≠ [] →
+      (h :: t2).getLast? = some x →
+        List.count t ((h :: (t2 ++ [y])).zip (t2 ++ [y])) = List.count t ((h :: t2).zip (h :: t2).tail)
+h : S
+h_nonempty : h :: h2 :: t2 ≠ []
+h_last : (h :: h2 :: t2).getLast? = some x
+⊢ List.count t ((h, h2) :: (h2 :: (t2 ++ [y])).zip (t2 ++ [y])) = List.count t ((h, h2) :: (h2 :: t2).zip t2)
+warning: Clean/Utils/SourceSinkPath.lean:393:6: This simp argument is unused:
+  List.countP_singleton
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, List.nil_append, List.zip_cons_cons, List.zip_nil_right, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵P̵_̵s̵i̵n̵g̵l̵e̵t̵o̵n̵,̵ ̵beq_iff_eq,
+  ̲  ̲ ̲ ̲ ̲ ̲List.tail_cons, List.countP_nil, ite_eq_right_iff, one_ne_zero, imp_false]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:393:29: This simp argument is unused:
+  beq_iff_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, List.nil_append, List.zip_cons_cons, List.zip_nil_right,
+        List.countP_singleton, b̵e̵q̵_̵i̵f̵f̵_̵e̵q̵,̵ ̵List.tail_cons, List.countP_nil, ite_eq_right_iff,
+  ̵  ̵ ̵ ̵ ̵ ̵one_ne_zero,
+  ̲  ̲ ̲ ̲ ̲ ̲imp_false]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:393:57: This simp argument is unused:
+  List.countP_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, List.nil_append, List.zip_cons_cons, List.zip_nil_right,
+        List.countP_singleton, beq_iff_eq, List.tail_cons, L̵is̵t.̵c̵o̵u̵n̵t̵P̵_̵n̵i̵l̵,̵ ̵i̵t̵e_eq_right_iff,
+  ̵  ̵ ̵ ̵ ̵ ̵one_ne_zero, imp_false]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:393:74: This simp argument is unused:
+  ite_eq_right_iff
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, List.nil_append, List.zip_cons_cons, List.zip_nil_right,
+        List.countP_singleton, beq_iff_eq, List.tail_cons, List.countP_nil, i̵t̵e̵_̵e̵q̵_̵r̵i̵g̵h̵t̵_̵i̵f̵f̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵one_ne_zero, imp_false]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:394:6: This simp argument is unused:
+  one_ne_zero
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, List.nil_append, List.zip_cons_cons, List.zip_nil_right,
+        List.countP_singleton, beq_iff_eq, List.tail_cons, List.countP_nil, ite_eq_right_iff,
+        o̵n̵e̵_̵n̵e̵_̵z̵e̵r̵o̵,̵ ̵imp_false]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:394:19: This simp argument is unused:
+  imp_false
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, List.nil_append, List.zip_cons_cons, List.zip_nil_right,
+        List.countP_singleton, beq_iff_eq, List.tail_cons, List.countP_nil, ite_eq_right_iff,
+        one_ne_zero,̵ ̵i̵m̵p̵_̵f̵a̵l̵s̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:398:53: This simp argument is unused:
+  List.count_cons
+
+Hint: Omit it from the simp argument list.
+  simp only [List.cons_append, List.zip_cons_cons, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵_̵c̵o̵n̵s̵,̵ ̵beq_iff_eq, Nat.add_right_cancel_iff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:398:70: This simp argument is unused:
+  beq_iff_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [List.cons_append, List.zip_cons_cons, List.count_cons, b̵e̵q̵_̵i̵f̵f̵_̵e̵q̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵Nat.add_right_cancel_iff]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:399:6: This simp argument is unused:
+  Nat.add_right_cancel_iff
+
+Hint: Omit it from the simp argument list.
+  simp only [List.cons_append, List.zip_cons_cons, List.count_cons, beq_iff_eq,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵N̵a̵t̵.̵a̵d̵d̵_̵r̵i̵g̵h̵t̵_̵c̵a̵n̵c̵e̵l̵_̵i̵f̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Clean/Utils/SourceSinkPath.lean:697:4: `simp` made no progress
+warning: Clean/Utils/SourceSinkPath.lean:732:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+error: Clean/Utils/SourceSinkPath.lean:742:6: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 1
+  a - b ≤ -1
+where
+ a := ↑(R (s, s))
+ b := ↑(List.countP (fun x ↦ x == (s, s)) [(s, s)])
+error: Clean/Utils/SourceSinkPath.lean:744:6: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≥ 0
+  b ≥ 0
+  b - c ≥ 1
+  a ≥ 1
+where
+ a := ↑(R (s, s))
+ b := ↑(List.count t [(s, s)])
+ c := ↑(R t)
+warning: Clean/Utils/SourceSinkPath.lean:741:29: This simp argument is unused:
+  BEq.rfl
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, B̵E̵q̵.̵r̵f̵l̵,̵ ̵List.countP_cons_of_pos, List.countP_nil, zero_add]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:741:38: This simp argument is unused:
+  List.countP_cons_of_pos
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, BEq.rfl, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵P̵_̵c̵o̵n̵s̵_̵o̵f̵_̵p̵o̵s̵,̵ ̵List.countP_nil, zero_add]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:741:63: This simp argument is unused:
+  List.countP_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, BEq.rfl, List.countP_cons_of_pos, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵P̵_̵n̵i̵l̵,̵ ̵zero_add]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:741:80: This simp argument is unused:
+  zero_add
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, BEq.rfl, List.countP_cons_of_pos, List.countP_nil,̵ ̵z̵e̵r̵o̵_̵a̵d̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Clean/Utils/SourceSinkPath.lean:763:4: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  e ≥ 0
+  d ≥ 1
+  c ≥ 1
+  c - e ≤ -1
+where
+ c := ↑(R (a, b))
+ d := ↑(R (b, a))
+ e := ↑(List.countP (fun x ↦ x == (a, b)) [(a, b), (b, a)])
+error: Clean/Utils/SourceSinkPath.lean:773:6: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  e ≥ 0
+  d ≥ 1
+  d - e ≤ -1
+  c ≥ 1
+where
+ c := ↑(R (a, b))
+ d := ↑(R (b, a))
+ e := ↑(List.countP (fun x ↦ x == (b, a)) [(a, b), (b, a)])
+error: Clean/Utils/SourceSinkPath.lean:780:10: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  List.count t [(a, b), (b, a)]
+in the target expression
+  List.count t [(a, b), (b, a)] ≤ R t
+
+case neg
+S : Type u_1
+inst✝ : DecidableEq S
+R : Run S
+a b : S
+h_ne : a ≠ b
+h_edge1 : R (a, b) > 0
+h_edge2 : R (b, a) > 0
+t : Transition S
+h1 : ¬t = (a, b)
+h2 : ¬t = (b, a)
+this : List.count t [(a, b), (b, a)] = 0
+⊢ List.count t [(a, b), (b, a)] ≤ R t
+warning: Clean/Utils/SourceSinkPath.lean:757:27: This simp argument is unused:
+  BEq.rfl
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, B̵E̵q̵.̵r̵f̵l̵,̵ ̵List.countP_cons_of_pos, List.countP_singleton, beq_iff_eq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:757:36: This simp argument is unused:
+  List.countP_cons_of_pos
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, BEq.rfl, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵P̵_̵c̵o̵n̵s̵_̵o̵f̵_̵p̵o̵s̵,̵ ̵List.countP_singleton, beq_iff_eq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:757:61: This simp argument is unused:
+  List.countP_singleton
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, BEq.rfl, List.countP_cons_of_pos, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵P̵_̵s̵i̵n̵g̵l̵e̵t̵o̵n̵,̵ ̵beq_iff_eq]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:757:84: This simp argument is unused:
+  beq_iff_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [List.count, BEq.rfl, List.countP_cons_of_pos, List.countP_singleton,̵ ̵b̵e̵q̵_̵i̵f̵f̵_̵e̵q̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:762:15: This simp argument is unused:
+  this
+
+Hint: Omit it from the simp argument list.
+  simp only [t̵h̵i̵s̵,̵ ̵↓reduceIte, zero_add, ge_iff_le]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:762:21: This simp argument is unused:
+  ↓reduceIte
+
+Hint: Omit it from the simp argument list.
+  simp only [this, ↓̵r̵e̵d̵u̵c̵e̵I̵t̵e̵,̵ ̵zero_add, ge_iff_le]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:762:33: This simp argument is unused:
+  zero_add
+
+Hint: Omit it from the simp argument list.
+  simp only [this, ↓reduceIte, z̵e̵r̵o̵_̵a̵d̵d̵,̵ ̵ge_iff_le]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:771:17: This simp argument is unused:
+  beq_iff_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [b̵e̵q̵_̵i̵f̵f̵_̵e̵q̵,̵ ̵this, not_false_eq_true, List.countP_cons_of_neg, BEq.rfl,
+  ̵  ̵ ̵ ̵ ̵ ̵ ̵ ̵List.countP_cons_of_pos,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲List.countP_nil, zero_add, ge_iff_le]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:771:29: This simp argument is unused:
+  this
+
+Hint: Omit it from the simp argument list.
+  simp only [beq_iff_eq, t̵h̵i̵s̵,̵ ̵not_false_eq_true, List.countP_cons_of_neg, BEq.rfl,
+          List.countP_cons_of_pos, List.countP_nil, zero_add, ge_iff_le]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:771:35: This simp argument is unused:
+  not_false_eq_true
+
+Hint: Omit it from the simp argument list.
+  simp only [beq_iff_eq, this, n̵o̵t̵_̵f̵a̵l̵s̵e̵_̵e̵q̵_̵t̵r̵u̵e̵,̵ ̵List.countP_cons_of_neg, BEq.rfl, List.countP_cons_of_pos,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲List.countP_nil, zero_add, ge_iff_le]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:771:54: This simp argument is unused:
+  List.countP_cons_of_neg
+
+Hint: Omit it from the simp argument list.
+  simp only [beq_iff_eq, this, not_false_eq_true, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵P̵_̵c̵o̵n̵s̵_̵o̵f̵_̵n̵e̵g̵,̵ ̵BEq.rfl, List.countP_cons_of_pos,
+  ̲  ̲ ̲ ̲ ̲ ̲ ̲ ̲List.countP_nil, zero_add, ge_iff_le]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:771:79: This simp argument is unused:
+  BEq.rfl
+
+Hint: Omit it from the simp argument list.
+  simp only [beq_iff_eq, this, not_false_eq_true, List.countP_cons_of_neg, ̵B̵E̵q̵.̵r̵f̵l̵,̵
+          List.countP_cons_of_pos, List.countP_nil, zero_add, ge_iff_le]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:772:8: This simp argument is unused:
+  List.countP_cons_of_pos
+
+Hint: Omit it from the simp argument list.
+  simp only [beq_iff_eq, this, not_false_eq_true, List.countP_cons_of_neg, BEq.rfl,
+          List.countP_c̵o̵ns̵_̵o̵f̵_̵p̵o̵s̵,̵ ̵L̵is̵t̵.̵c̵o̵u̵n̵t̵P̵_̵n̵i̵l, zero_add, ge_iff_le]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:772:33: This simp argument is unused:
+  List.countP_nil
+
+Hint: Omit it from the simp argument list.
+  simp only [beq_iff_eq, this, not_false_eq_true, List.countP_cons_of_neg, BEq.rfl,
+          List.countP_cons_of_pos, L̵i̵s̵t̵.̵c̵o̵u̵n̵t̵P̵_̵n̵i̵l̵,̵ ̵zero_add, ge_iff_le]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:772:50: This simp argument is unused:
+  zero_add
+
+Hint: Omit it from the simp argument list.
+  simp only [beq_iff_eq, this, not_false_eq_true, List.countP_cons_of_neg, BEq.rfl,
+          List.countP_cons_of_pos, List.countP_nil, z̵e̵r̵o̵_̵a̵d̵d̵,̵ ̵ge_iff_le]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Clean/Utils/SourceSinkPath.lean:789:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: Clean/Utils/SourceSinkPath.lean:985:6: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+error: Clean/Utils/SourceSinkPath.lean:1046:50: unsolved goals
+S : Type u_1
+inst✝¹ : DecidableEq S
+inst✝ : Fintype S
+R : Run S
+root : S
+h_acyclic : R.isAcyclic
+h_has_out : ∃ y, R (root, y) > 0
+h_root_start : [root].head? = some root
+h_root_end : [root].getLast? = some root
+h_root_nonempty : [root] ≠ []
+t : Transition S
+⊢ List.count t [] ≤ R t
+warning: Clean/Utils/SourceSinkPath.lean:1137:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+warning: Clean/Utils/SourceSinkPath.lean:1182:2: `push_neg` has been deprecated. Prefer using `push Not` instead.
+If you'd rather continue using `push_neg` in your project, you can implement it as follows:
+```
+open Lean.Parser.Tactic in
+macro "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg:optConfig Not $[$loc]?)
+```
+error: Lean exited with code 1
+Some required targets logged failures:
+- Clean.Utils.Field
+- Clean.Utils.Vector
+- Clean.Utils.SourceSinkPath
+error: build failed
