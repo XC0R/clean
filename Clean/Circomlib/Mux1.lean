@@ -19,6 +19,10 @@ structure Inputs (n : ℕ) (F : Type) where
   c : ProvableVector fieldPair n F  -- n pairs of constants
   s : F                              -- selector
 deriving ProvableStruct
+
+@[simp, circuit_norm] lemma Inputs.fromComponents_reduce {n : ℕ} {F : Type}
+    (c : ProvableVector fieldPair n F) (s : F) :
+    @fromComponents (Inputs n) _ F (.cons c (.cons s .nil)) = ⟨c, s⟩ := rfl
 /-
 template MultiMux1(n) {
     signal input c[n][2]; // Constants
@@ -92,36 +96,26 @@ def circuit (n : ℕ) : FormalCircuit (F p) (Inputs n) (fields n) where
 
     -- Now we can work with the components
     rw [← h_input] at h_assumptions ⊢
-    -- Extract the fact that s is boolean
-    -- IsBool means s = 0 ∨ s = 1
-    simp only [eval_vector]
-    simp only [Vector.getElem_map]
-    simp only at h_assumptions
-
+    simp only [Inputs.fromComponents_reduce, eval_vector, Vector.getElem_map] at h_assumptions ⊢
     cases h_assumptions with
       | inl h0 =>
-        -- When s = 0
-        rw [h0]
-        simp only [mul_zero, circuit_norm]
-        norm_num
+        rw [h0]; simp
+        show _ = (eval env input_var.c[i]).1
+        rfl
       | inr h1 =>
-        -- When s = 1
-        rw [h1]
-        simp only [mul_one, if_neg (by norm_num : (1 : F p) ≠ 0), circuit_norm]
-        norm_num
+        rw [h1]; simp
+        show _ = (eval env input_var.c[i]).2
+        rfl
 
   completeness := by
     circuit_proof_start
-    -- We need to show that the witnessed values equal the computed expressions
     ext i hi
-    -- Left side: eval of varFromOffset
-    simp only [Vector.getElem_map, Vector.getElem_mapRange]
-    -- Now simplify the left side: Expression.eval env (var { index := offset + 1 * i })
-    simp only [Expression.eval]
-    -- Right side: eval of the computed expression
+    simp only [Vector.getElem_map, Vector.getElem_mapRange, Expression.eval, circuit_norm]
     have h_env_i := h_env ⟨i, hi⟩
+    simp only [toElements, Vector.getElem_map] at h_env_i
     rw [h_env_i]
-    norm_num
+    simp only [Expression.eval]
+    ring
 
 end MultiMux1
 
@@ -131,6 +125,9 @@ structure Inputs (F : Type) where
   c : Vector F 2  -- 2 constants
   s : F           -- selector
 deriving ProvableStruct
+
+@[simp, circuit_norm] lemma Inputs.fromComponents_reduce {F : Type} (c : Vector F 2) (s : F) :
+    @fromComponents Inputs _ F (.cons c (.cons s .nil)) = ⟨c, s⟩ := rfl
 
 /-
 template Mux1() {
@@ -182,22 +179,21 @@ def circuit : FormalCircuit (F p) Inputs field where
   soundness := by
     simp only [circuit_norm, main]
     intro _ _ _ input h_input h_assumptions h_subcircuit_sound
-    rw[← h_input] at *
-    clear input
-    clear h_input
-    simp only [MultiMux1.circuit, circuit_norm] at h_subcircuit_sound h_assumptions ⊢
+    rw [← h_input] at *; clear input; clear h_input
+    simp only [MultiMux1.circuit, circuit_norm, Inputs.fromComponents_reduce,
+      MultiMux1.Inputs.fromComponents_reduce, eval_vector] at h_subcircuit_sound h_assumptions ⊢
     specialize h_subcircuit_sound h_assumptions 0 (by omega)
     rw [h_subcircuit_sound]
-    -- Now we need to show the RHS equals our spec
-    -- First, simplify the evaluation of the vector
-    simp only [eval_vector, Vector.getElem_mk, List.getElem_toArray, List.getElem_cons_zero, circuit_norm]
+    simp [eval_vector, Vector.getElem_map]
 
   completeness := by
     simp only [circuit_norm, main]
     intros offset env input_var h_env input h_input h_s
-    simp only [MultiMux1.circuit, circuit_norm]
+    simp only [MultiMux1.circuit, circuit_norm, Inputs.fromComponents_reduce,
+      MultiMux1.Inputs.fromComponents_reduce]
     rw [← h_input] at h_s
-    simp_all
+    simp only [Inputs.fromComponents_reduce] at h_s
+    exact h_s
 
 end Mux1
 
