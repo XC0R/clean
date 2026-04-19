@@ -13,6 +13,9 @@ structure Inputs (F : Type) where
   y: F
 deriving ProvableStruct
 
+@[simp, circuit_norm] theorem Inputs.fromComponents_reduce {F : Type} (x y : F) :
+    @fromComponents Inputs _ F (.cons x (.cons y .nil)) = Inputs.mk x y := rfl
+
 def Assumptions (input : Inputs (F p)) :=
   let ⟨x, y⟩ := input
   x.val < 256 ∧ y.val < 256
