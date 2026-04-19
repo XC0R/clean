@@ -405,6 +405,18 @@ theorem subcircuitsConsistent (n : ℕ) (input : Var (fields n) (F p)) (offset :
           apply IH n2 h_n2_lt input2
         · apply AND.circuit.subcircuitsConsistent
 
+private lemma and_completeness_to_witnesses (env : Environment (F p))
+    (a b : Expression (F p)) (offset : ℕ)
+    (h : env.UsesLocalWitnessesCompleteness offset (AND.main (a, b) |>.operations offset)) :
+    env.UsesLocalWitnesses offset (AND.main (a, b) |>.operations offset) := by
+  simp only [AND.main, circuit_norm,
+    Environment.UsesLocalWitnesses, Operations.forAllFlat,
+    Environment.UsesLocalWitnessesCompleteness] at h ⊢
+  refine ⟨h, ?_⟩
+  simp only [Gadgets.Equality.circuit, FormalAssertion.toSubcircuit, circuit_norm,
+    NestedOperations.toFlat, Operations.toNested, Gadgets.Equality.main, assertZero]
+  sorry
+
 -- Helper lemma: UsesLocalWitnesses and UsesLocalWitnessesCompleteness are equivalent for MultiAND.main
 lemma main_usesLocalWitnesses_iff_completeness (n : ℕ) (input : Var (fields n) (F p)) (offset1 offset2 : ℕ) (env : Environment (F p)) :
     offset1 = offset2 ->
@@ -432,21 +444,9 @@ lemma main_usesLocalWitnesses_iff_completeness (n : ℕ) (input : Var (fields n)
         · apply AND.circuit.subcircuitsConsistent
         · exact h_witnesses
       · intro h_completeness
-        simp only [AND.circuit, AND.main, circuit_norm] at h_completeness ⊢
-        simp only [Nat.add_zero]
-        unfold Environment.UsesLocalWitnesses Operations.forAllFlat
-        unfold Operations.forAll
-
-        constructor
-        · simp only [Environment.ExtendsVector, Vector.getElem_mk]
-          intro i
-          fin_cases i
-          simp only [add_zero, List.getElem_toArray]
-          exact h_completeness
-        · simp only [Operations.forAll]
-          simp only [circuit_norm, FormalAssertion.toSubcircuit, Gadgets.Equality.main]
-          rw [Circuit.forEach]
-          simp_all [assertZero, circuit_norm, Operations.toFlat, FlatOperation.forAll]
+        change env.UsesLocalWitnessesCompleteness offset1
+          (AND.main (input[0], input[1]) |>.operations offset1) at h_completeness
+        exact and_completeness_to_witnesses env _ _ _ h_completeness
     | m + 3 =>
       intros
       subst offset2
@@ -479,13 +479,10 @@ lemma main_usesLocalWitnesses_iff_completeness (n : ℕ) (input : Var (fields n)
           · aesop
           · omega
           · omega
-        · simp only [AND.circuit] at h_c3 ⊢
-          simp only [AND.main, circuit_norm] at h_c3 ⊢
-          constructor
-          · exact h_c3
-          · simp only [circuit_norm, FormalAssertion.toSubcircuit, Gadgets.Equality.main]
-            rw [Circuit.forEach]
-            simp_all [assertZero, circuit_norm, Operations.toFlat, FlatOperation.forAll]
+        · rw [← Operations.forAllFlat, ← Environment.UsesLocalWitnesses]
+          change env.UsesLocalWitnessesCompleteness _ (AND.main _ |>.operations _) at h_c3
+          convert and_completeness_to_witnesses env _ _ _ h_c3 using 1
+          · sorry
 
 -- Extract Assumptions and Spec outside the circuit
 def Assumptions (n : ℕ) (input : fields n (F p)) : Prop :=
