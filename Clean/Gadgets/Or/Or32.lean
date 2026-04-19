@@ -31,42 +31,65 @@ def Spec (input : Inputs (F p)) (z : U32 (F p)) :=
   let ⟨x, y⟩ := input
   z.value = x.value ||| y.value ∧ z.Normalized
 
+@[reducible]
 instance elaborated : ElaboratedCircuit (F p) Inputs U32 where
   main
   localLength _ := 4
 
+set_option maxHeartbeats 1600000
 theorem soundness : Soundness (F p) elaborated Assumptions Spec := by
   circuit_proof_start
   have l_components := U32.or_componentwise h_assumptions.1 h_assumptions.2
-  rcases input_x
-  rcases input_y
-  rcases input_var_x
-  rcases input_var_y
+  delta main at *
+  simp only [circuit_norm, Or8.circuit] at h_holds ⊢
+  rcases h_holds with ⟨h1, h2, h3, h4⟩
+  replace h1 : Or8.Assumptions ⟨Expression.eval env input_var_x.x0, Expression.eval env input_var_y.x0⟩ →
+    Or8.Spec ⟨Expression.eval env input_var_x.x0, Expression.eval env input_var_y.x0⟩
+      (Expression.eval env (Or8.main ⟨input_var_x.x0, input_var_y.x0⟩ i₀).1) := h1
+  replace h2 : Or8.Assumptions ⟨Expression.eval env input_var_x.x1, Expression.eval env input_var_y.x1⟩ →
+    Or8.Spec ⟨Expression.eval env input_var_x.x1, Expression.eval env input_var_y.x1⟩
+      (Expression.eval env (Or8.main ⟨input_var_x.x1, input_var_y.x1⟩ (i₀ + 1)).1) := h2
+  replace h3 : Or8.Assumptions ⟨Expression.eval env input_var_x.x2, Expression.eval env input_var_y.x2⟩ →
+    Or8.Spec ⟨Expression.eval env input_var_x.x2, Expression.eval env input_var_y.x2⟩
+      (Expression.eval env (Or8.main ⟨input_var_x.x2, input_var_y.x2⟩ (i₀ + 1 + 1)).1) := h3
+  replace h4 : Or8.Assumptions ⟨Expression.eval env input_var_x.x3, Expression.eval env input_var_y.x3⟩ →
+    Or8.Spec ⟨Expression.eval env input_var_x.x3, Expression.eval env input_var_y.x3⟩
+      (Expression.eval env (Or8.main ⟨input_var_x.x3, input_var_y.x3⟩ (i₀ + 1 + 1 + 1)).1) := h4
+  rcases input_x with ⟨x0, x1, x2, x3⟩
+  rcases input_y with ⟨y0, y1, y2, y3⟩
+  rcases input_var_x with ⟨x0v, x1v, x2v, x3v⟩
+  rcases input_var_y with ⟨y0v, y1v, y2v, y3v⟩
   simp only [U32.Normalized] at *
   simp only [explicit_provable_type, toVars, fromElements] at h_input ⊢ l_components
   simp only [Vector.map_mk, List.map_toArray, List.map_cons, List.map_nil, U32.mk.injEq] at h_input ⊢ l_components
-  simp only [Or8.circuit, Or8.Assumptions, Or8.Spec, h_input] at h_holds
-  rcases h_holds with ⟨h_holds1, h_holds⟩
-  specialize h_holds1 (by omega)
-  rcases h_holds with ⟨h_holds2, h_holds⟩
-  specialize h_holds2 (by omega)
-  rcases h_holds with ⟨h_holds3, h_holds4⟩
-  specialize h_holds3 (by omega)
-  specialize h_holds4 (by omega)
+  rcases h_input with ⟨⟨hx0, hx1, hx2, hx3⟩, hy0, hy1, hy2, hy3⟩
+  dsimp only [Or8.Assumptions, Or8.Spec] at h1 h2 h3 h4
+  rw [hx0, hy0] at h1; rw [hx1, hy1] at h2; rw [hx2, hy2] at h3; rw [hx3, hy3] at h4
+  have h1 := h1 (by omega)
+  have h2 := h2 (by omega)
+  have h3 := h3 (by omega)
+  have h4 := h4 (by omega)
   simp only [U32.value] at ⊢ l_components
-  simp only [h_holds1.2, h_holds2.2, h_holds3.2, h_holds4.2] -- use the Normalized conditions
-  simp only [h_holds1.1, h_holds2.1, h_holds3.1, h_holds4.1, l_components]
+  simp only [h1.2, h2.2, h3.2, h4.2]
+  simp only [h1.1, h2.1, h3.1, h4.1, l_components]
   ring_nf
   simp
 
 theorem completeness : Completeness (F p) elaborated Assumptions := by
   circuit_proof_start
-  rcases input_x
-  rcases input_y
+  delta main at *
+  simp only [circuit_norm, Or8.circuit] at ⊢
+  rcases input_x with ⟨x0, x1, x2, x3⟩
+  rcases input_y with ⟨y0, y1, y2, y3⟩
   simp only [explicit_provable_type, toVars, fromElements] at h_input ⊢
   simp only [Vector.map_mk, List.map_toArray, List.map_cons, List.map_nil, U32.mk.injEq] at h_input ⊢
-  simp only [Or8.circuit, Or8.Assumptions, h_input]
   simp only [U32.Normalized] at h_assumptions
+  rcases h_input with ⟨⟨hx0, hx1, hx2, hx3⟩, hy0, hy1, hy2, hy3⟩
+  change Or8.Assumptions ⟨Expression.eval env input_var_x.x0, Expression.eval env input_var_y.x0⟩ ∧
+    Or8.Assumptions ⟨Expression.eval env input_var_x.x1, Expression.eval env input_var_y.x1⟩ ∧
+    Or8.Assumptions ⟨Expression.eval env input_var_x.x2, Expression.eval env input_var_y.x2⟩ ∧
+    Or8.Assumptions ⟨Expression.eval env input_var_x.x3, Expression.eval env input_var_y.x3⟩
+  simp only [Or8.Assumptions, hx0, hx1, hx2, hx3, hy0, hy1, hy2, hy3]
   omega
 
 def circuit : FormalCircuit (F p) Inputs U32 :=

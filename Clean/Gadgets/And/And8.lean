@@ -71,6 +71,7 @@ lemma two_non_zero : (2 : F p) ≠ 0 := by
   rw [val_two, ZMod.val_zero]
   trivial
 
+@[reducible]
 instance elaborated : ElaboratedCircuit (F p) Inputs field where
   main
   localLength _ := 1
