@@ -61,8 +61,8 @@ def circuit (n r : ℕ) [NeZero n] : FormalCircuit (F p) (fields n) (fields n) w
     simp only [Vector.getElem_map, Vector.getElem_mapRange, Expression.eval]
     -- witness = eval of rotated input
     rw [h_env ⟨i, hi⟩]
-    -- simplify RHS to match
-    rw [Vector.getElem_mapFinRange i hi]
+    -- simplify toElements/map/mapFinRange
+    simp only [toElements, Vector.getElem_map, Vector.getElem_mapFinRange, Vector.get]
 
 end RotR
 end Circomlib
