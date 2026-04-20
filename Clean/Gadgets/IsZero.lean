@@ -63,9 +63,11 @@ lemma foldl_isZero_eq_one_iff {n : ℕ} {vars : Vector (Expression F) n} {vals :
     let vars_pre := vars.take pre |>.cast (by simp : min pre (pre + 1) = pre)
     let vals_pre := vals.take pre |>.cast (by simp : min pre (pre + 1) = pre)
     have h_eval_pre : Vector.map (Expression.eval env) vars_pre = vals_pre := by
-      simp only [Vector.take_eq_extract, add_tsub_cancel_right, Vector.extract_eq_pop,
-        Nat.add_one_sub_one, Nat.sub_zero, Vector.cast_cast, Vector.cast_rfl, Vector.map_pop,
-        vals_pre, vars_pre, h_eval]
+      ext i hi
+      simp only [vars_pre, vals_pre, Vector.getElem_map, Vector.getElem_cast, Vector.getElem_take]
+      have h_i := congr_arg (·[i]'(by omega)) h_eval
+      simp only [Vector.getElem_map] at h_i
+      exact h_i
     specialize h_ih h_eval_pre (i₀:=i₀)
     simp only [vars_pre, vals_pre] at *
     simp only [Fin.getElem_fin,
@@ -75,8 +77,7 @@ lemma foldl_isZero_eq_one_iff {n : ℕ} {vars : Vector (Expression F) n} {vals :
       intro i
       specialize h_isZero i.castSucc
       norm_num at h_isZero ⊢
-      simp only [Nat.add_one_sub_one, Nat.sub_zero, Vector.getElem_cast, Vector.getElem_pop',
-        h_isZero])
+      exact h_isZero)
     simp only [Vector.getElem_take] at h_ih
     rw [h_ih]
     specialize h_isZero (.last pre) trivial
@@ -109,10 +110,12 @@ theorem soundness [DecidableEq (M F)] : Soundness F (elaborated (M := M)) Assump
     rw [ProvableType.fromElements_eq_iff']
     rw [Vector.ext_iff]
     simp only [Vector.getElem_replicate]
+  simp only [main, circuit_norm] at h_holds ⊢
   apply foldl_isZero_eq_one_iff <;> assumption
 
 theorem completeness : Completeness F (elaborated (M := M)) Assumptions := by
   circuit_proof_start [IsZeroField.circuit, IsZeroField.Assumptions]
+  simp only [main, circuit_norm, IsZeroField.circuit, IsZeroField.Assumptions] at h_env ⊢
 
 def circuit [DecidableEq (M F)] : FormalCircuit F M field := {
   elaborated with Assumptions, Spec, soundness, completeness
