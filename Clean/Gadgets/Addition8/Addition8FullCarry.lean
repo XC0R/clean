@@ -14,10 +14,16 @@ structure Inputs (F : Type) where
   carryIn: F
 deriving ProvableStruct
 
+@[simp, circuit_norm] theorem Inputs.fromComponents_reduce {F : Type} (x y carryIn : F) :
+    @fromComponents Inputs _ F (.cons x (.cons y (.cons carryIn .nil))) = Inputs.mk x y carryIn := rfl
+
 structure Outputs (F : Type) where
   z: F
   carryOut: F
 deriving ProvableStruct
+
+@[simp, circuit_norm] theorem Outputs.fromComponents_reduce {F : Type} (z carryOut : F) :
+    @fromComponents Outputs _ F (.cons z (.cons carryOut .nil)) = Outputs.mk z carryOut := rfl
 
 def main (input : Var Inputs (F p)) : Circuit (F p) (Var Outputs (F p)) := do
   let ⟨x, y, carryIn⟩ := input
