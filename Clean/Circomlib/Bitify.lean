@@ -67,10 +67,12 @@ lemma lc_eq {i0} {env} {n : ℕ} :
 def arbitraryBitLengthCircuit (n : ℕ) : GeneralFormalCircuit (F p) field (fields n) where
   main := main n
   localLength _ := n
-  localLength_eq := by simp +arith [circuit_norm, main]
+  localLength_eq := by
+    simp +arith [circuit_norm, main, ElaboratedCircuit.localLength,
+      Gadgets.Equality.circuit, FormalAssertion.toSubcircuit]
   output _ i := varFromOffset (fields n) i
 
-  subcircuitsConsistent := by intros; and_intros <;> (try simp only [circuit_norm]; try first | ac_rfl | trivial)
+  subcircuitsConsistent := by simp +arith [circuit_norm, main, Gadgets.Equality.circuit]
 
   Assumptions input _ := input.val < 2^n
 
