@@ -139,6 +139,48 @@ instance {F : Type} [Field F] {α : TypeMap} [ProvableType α] :
 attribute [circuit_norm] HasAssertEq.assert_eq
 infix:50 " === " => HasAssertEq.assert_eq
 
+-- Direct reduction lemmas for `===` inside ConstraintsHold.Soundness/Completeness.
+-- These fire after bind_soundness decomposes the monadic chain, where the CoeFun
+-- coercion from FormalAssertion prevents assertion_soundness from matching.
+
+@[circuit_norm]
+theorem Expression.assertEquals_soundness {F : Type} [Field F]
+    (x y : Expression F) (n : ℕ) (env : Environment F) :
+    Circuit.ConstraintsHold.Soundness env ((Expression.assertEquals x y n).2) ↔
+    (Expression.eval env x = Expression.eval env y) := by
+  simp only [Expression.assertEquals, assertion_soundness,
+    Gadgets.Equality.circuit_Spec, Gadgets.Equality.circuit_Assumptions,
+    true_implies, circuit_norm]
+  exact Iff.rfl
+
+@[circuit_norm]
+theorem Expression.assertEquals_completeness {F : Type} [Field F]
+    (x y : Expression F) (n : ℕ) (env : Environment F) :
+    Circuit.ConstraintsHold.Completeness env ((Expression.assertEquals x y n).2) ↔
+    (Expression.eval env x = Expression.eval env y) := by
+  simp only [Expression.assertEquals, assertion_completeness,
+    Gadgets.Equality.circuit_Spec, Gadgets.Equality.circuit_Assumptions,
+    true_and, circuit_norm]
+  exact Iff.rfl
+
+@[circuit_norm]
+theorem assertEquals_soundness {F : Type} [Field F] {α : TypeMap} [ProvableType α]
+    (x y : α (Expression F)) (n : ℕ) (env : Environment F) :
+    Circuit.ConstraintsHold.Soundness env ((assertEquals x y n).2) ↔
+    (eval env x = eval env y) := by
+  simp only [assertEquals, assertion_soundness,
+    Gadgets.Equality.circuit_Spec, Gadgets.Equality.circuit_Assumptions,
+    true_implies, circuit_norm]
+
+@[circuit_norm]
+theorem assertEquals_completeness {F : Type} [Field F] {α : TypeMap} [ProvableType α]
+    (x y : α (Expression F)) (n : ℕ) (env : Environment F) :
+    Circuit.ConstraintsHold.Completeness env ((assertEquals x y n).2) ↔
+    (eval env x = eval env y) := by
+  simp only [assertEquals, assertion_completeness,
+    Gadgets.Equality.circuit_Spec, Gadgets.Equality.circuit_Assumptions,
+    true_and, circuit_norm]
+
 -- Defines a unified `<==` notation for witness assignment with equality assertion in circuits.
 
 class HasAssignEq (β : Type) (F : outParam Type) [Field F] where

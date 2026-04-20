@@ -44,11 +44,12 @@ def elaborated (offset : Fin 8) : ElaboratedCircuit (F p) field Outputs where
 
 theorem soundness (offset : Fin 8) : Soundness (F p) (circuit := elaborated offset) Assumptions (Spec offset) := by
   intro i0 env x_var (x : F p) h_input (x_byte : x.val < 256) h_holds
-  simp only [id_eq, circuit_norm] at h_input
-  simp only [circuit_norm, elaborated, main, Spec, ByteTable, h_input] at h_holds ⊢
-  clear h_input
+  delta elaborated main at h_holds ⊢
+  simp only [circuit_norm, ByteTable, h_input] at *
 
   obtain ⟨low_lt, high_lt, h_eq⟩ := h_holds
+  simp only [h_input] at h_eq
+  clear h_input
   set low := env.get i0
   set high := env.get (i0 + 1)
 
@@ -58,8 +59,6 @@ theorem soundness (offset : Fin 8) : Soundness (F p) (circuit := elaborated offs
   have pow_8 : 2^n * 2^offset.val = (2^8 : F p) := by simp [n, ←pow_add]
   have pow_8_nat : 2^n * 2^offset.val = 2^8 := by simp [n, ←pow_add]
 
-  -- we first work with the equation multiplied by `2^n`, where we can make use of the range check on `2^n * low`
-  -- the goal is to apply `FieldUtils.mul_nat_val_of_dvd` to get to the stronger inequality `low < 2^offset`
   have h_eq_mul : 2^n * x = 2^n * low + 2^n * 2^offset.val * high := by rw [h_eq, mul_add, mul_comm high, mul_assoc]
   replace h_eq_mul := congrArg ZMod.val h_eq_mul
 
@@ -88,16 +87,17 @@ theorem soundness (offset : Fin 8) : Soundness (F p) (circuit := elaborated offs
   rw [←two_pow_cast] at h_eq_mul_low
   rw [h_eq_mul_low, ←pow_8_nat, Nat.mul_lt_mul_left (show 2^n > 0 by simp)] at h_lt_mul_low
 
-  -- finally we have the desired inequality on `low`
   have h_lt_low : low.val < 2^offset.val := h_lt_mul_low
   have ⟨ low_eq, high_eq ⟩ := Theorems.soundness offset x low high x_byte h_lt_low high_lt h_eq
-  use ⟨ low_eq, high_eq ⟩, h_lt_low
-  rwa [high_eq, Nat.div_lt_iff_lt_mul (by simp), pow_8_nat]
+  have h_high_lt : high.val < 2^(8-offset.val) := by
+    rw [high_eq, Nat.div_lt_iff_lt_mul (by simp), pow_8_nat]; exact x_byte
+  exact ⟨⟨low_eq, high_eq⟩, h_lt_low, h_high_lt⟩
 
 theorem completeness (offset : Fin 8) : Completeness (F p) (elaborated offset) Assumptions := by
   rintro i0 env x_var henv (x : F p) h_input (x_byte : x.val < 256)
   simp only [ProvableType.eval_field] at h_input
-  simp only [circuit_norm, main, elaborated, h_input, ByteTable] at henv ⊢
+  delta elaborated main at henv ⊢
+  simp only [circuit_norm, h_input, ByteTable] at henv ⊢
   simp only [henv]
   have pow_8_nat : 2^8 = 2^(8-offset.val) * 2^offset.val := by simp [←pow_add]
 
