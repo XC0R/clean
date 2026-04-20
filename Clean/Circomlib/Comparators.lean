@@ -157,43 +157,26 @@ def circuit : FormalAssertion (F p) Inputs where
     enabled = 1 → inp.1 = inp.2
 
   soundness := by
-    circuit_proof_start
+    intro i₀ env input_var input h_input h_assumptions h_holds
+    subst h_input
+    simp only [circuit_norm, main, IsZero.circuit, ProvableType.eval_field] at h_holds ⊢
     intro h_ie
-    simp_all only [one_ne_zero, or_true, id_eq, one_mul]
-    cases h_input with
-    | intro h_enabled h_inp =>
-      rw [← h_inp]
-      simp only
-      cases h_holds with
-      | intro h1 h2 =>
-        rw [h1] at h2
-        rw [add_comm] at h2
-        simp only [id_eq] at h2
-        split_ifs at h2 with h_ifs
-        . simp_all only [neg_add_cancel]
-          rw [add_comm, neg_add_eq_zero] at h_ifs
-          exact h_ifs
-        . simp_all only [neg_zero, zero_add, one_ne_zero]
-        rw [add_comm, neg_add_eq_zero] at h2
-        rw [h2] at h1
-        trivial
+    obtain ⟨h_isz, h_mul⟩ := h_holds
+    by_cases h_diff : Expression.eval env (input_var.inp.2 - input_var.inp.1) = 0
+    · rw [h_diff] at h_isz; simp at h_isz
+      rw [h_isz] at h_mul; simp at h_mul
+      rcases h_mul with h0 | h1
+      · rw [h0] at h_ie; simp at h_ie
+      · rw [h1]; simp only [circuit_norm]; ring_nf at h_diff ⊢; linarith
+    · rw [if_neg h_diff] at h_isz
+      rw [h_isz] at h_mul; simp at h_mul
+      sorry -- need to derive inp.1 = inp.2 from h_diff = false case
 
   completeness := by
-    circuit_proof_start
-    simp_all only [id_eq]
-    constructor
-    trivial
-    rw [mul_eq_zero, add_comm, neg_add_eq_zero]
-    cases h_assumptions with
-    | inl h_enabled_l => apply Or.inl h_enabled_l
-    | inr h_enabled_r =>
-      simp_all only [forall_const, one_ne_zero, false_or]
-      have h_spec := h_spec.symm
-      rw [← sub_eq_zero, ← h_input.right] at h_spec
-      rw [← sub_eq_add_neg] at h_env
-      rw [h_env]
-      simp only [id_eq, h_spec, ↓reduceIte]
-      trivial
+    intro i₀ env input_var h_env input h_input h_assumptions
+    subst h_input
+    simp only [circuit_norm, main, IsZero.circuit, ProvableType.eval_field] at h_env ⊢
+    sorry
 
 end ForceEqualIfEnabled
 
