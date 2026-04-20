@@ -19,6 +19,15 @@ deriving ProvableStruct
 @[simp, circuit_norm] theorem Inputs.fromComponents_reduce {F : Type} (x y : U32 F) (carryIn : F) :
     @fromComponents Inputs _ F (.cons x (.cons y (.cons carryIn .nil))) = Inputs.mk x y carryIn := rfl
 
+@[simp, circuit_norm] theorem Inputs.fromComponents_x {F : Type} (x y : U32 F) (carryIn : F) :
+    (@fromComponents Inputs _ F (.cons x (.cons y (.cons carryIn .nil)))).x = x := rfl
+
+@[simp, circuit_norm] theorem Inputs.fromComponents_y {F : Type} (x y : U32 F) (carryIn : F) :
+    (@fromComponents Inputs _ F (.cons x (.cons y (.cons carryIn .nil)))).y = y := rfl
+
+@[simp, circuit_norm] theorem Inputs.fromComponents_carryIn {F : Type} (x y : U32 F) (carryIn : F) :
+    (@fromComponents Inputs _ F (.cons x (.cons y (.cons carryIn .nil)))).carryIn = carryIn := rfl
+
 @[simp, circuit_norm] theorem Inputs.eval_reduce {F : Type} [Field F]
     (env : Environment F) (v : Var Inputs F) :
     ProvableStruct.eval env v = Inputs.mk (ProvableType.eval env v.x) (ProvableType.eval env v.y)

@@ -64,24 +64,58 @@ theorem soundness_to_u64 {x y z : U64 (F p)}
   repeat rw [and_xor_sum]
   repeat assumption
 
+set_option maxHeartbeats 3200000 in
 theorem soundness : Soundness (F p) elaborated Assumptions Spec := by
-  intro i env input_var ⟨ x, y ⟩ h_input h_assumptions h_holds
-  cases x; cases y
-  apply soundness_to_u64 h_assumptions.left h_assumptions.right
-  simp only [circuit_norm, explicit_provable_type, Vector.mapRange,
-    main, Assumptions, And8.circuit, And8.Assumptions, And8.Spec,
-    U64.Normalized] at h_assumptions h_holds h_input ⊢
-  obtain ⟨⟨h1,h2,h3,h4,h5,h6,h7,h8⟩,h9,h10,h11,h12,h13,h14,h15,h16⟩ := h_input
-  simp only [h1,h2,h3,h4,h5,h6,h7,h8,h9,h10,h11,h12,h13,h14,h15,h16] at h_holds ⊢
-  exact h_holds
+  circuit_proof_start
+  have x_norm := h_assumptions.1
+  have y_norm := h_assumptions.2
+  delta main at *
+  simp only [circuit_norm, And8.circuit] at h_holds ⊢
+  rcases h_holds with ⟨h1, h2, h3, h4, h5, h6, h7, h8⟩
+  rcases input_x with ⟨x0, x1, x2, x3, x4, x5, x6, x7⟩
+  rcases input_y with ⟨y0, y1, y2, y3, y4, y5, y6, y7⟩
+  rcases input_var_x with ⟨x0v, x1v, x2v, x3v, x4v, x5v, x6v, x7v⟩
+  rcases input_var_y with ⟨y0v, y1v, y2v, y3v, y4v, y5v, y6v, y7v⟩
+  simp only [explicit_provable_type, toVars, fromElements] at h_input ⊢
+  simp only [Vector.map_mk, List.map_toArray, List.map_cons, List.map_nil, U64.mk.injEq] at h_input ⊢
+  rcases h_input with ⟨⟨hx0, hx1, hx2, hx3, hx4, hx5, hx6, hx7⟩, hy0, hy1, hy2, hy3, hy4, hy5, hy6, hy7⟩
+  simp only [U64.Normalized] at h_assumptions
+  obtain ⟨⟨ha0, ha1, ha2, ha3, ha4, ha5, ha6, ha7⟩, hb0, hb1, hb2, hb3, hb4, hb5, hb6, hb7⟩ := h_assumptions
+  dsimp only [And8.Assumptions, And8.Spec] at h1 h2 h3 h4 h5 h6 h7 h8
+  rw [hx0, hy0] at h1; rw [hx1, hy1] at h2; rw [hx2, hy2] at h3; rw [hx3, hy3] at h4
+  rw [hx4, hy4] at h5; rw [hx5, hy5] at h6; rw [hx6, hy6] at h7; rw [hx7, hy7] at h8
+  have h1 := h1 ⟨ha0, hb0⟩
+  have h2 := h2 ⟨ha1, hb1⟩
+  have h3 := h3 ⟨ha2, hb2⟩
+  have h4 := h4 ⟨ha3, hb3⟩
+  have h5 := h5 ⟨ha4, hb4⟩
+  have h6 := h6 ⟨ha5, hb5⟩
+  have h7 := h7 ⟨ha6, hb6⟩
+  have h8 := h8 ⟨ha7, hb7⟩
+  apply soundness_to_u64 x_norm y_norm
+  exact ⟨h1, h2, h3, h4, h5, h6, h7, h8⟩
 
 theorem completeness : Completeness (F p) elaborated Assumptions := by
-  intro i env input_var h_env ⟨ x, y ⟩ h_input h_assumptions
-  cases x; cases y
-  simp only [circuit_norm, explicit_provable_type,
-    main, Assumptions, And8.circuit, And8.Assumptions,
-    U64.Normalized] at h_assumptions h_env ⊢
-  simp_all
+  circuit_proof_start
+  delta main at *
+  simp only [circuit_norm, And8.circuit] at ⊢
+  rcases input_x with ⟨x0, x1, x2, x3, x4, x5, x6, x7⟩
+  rcases input_y with ⟨y0, y1, y2, y3, y4, y5, y6, y7⟩
+  simp only [explicit_provable_type, toVars, fromElements] at h_input ⊢
+  simp only [Vector.map_mk, List.map_toArray, List.map_cons, List.map_nil, U64.mk.injEq] at h_input ⊢
+  simp only [U64.Normalized] at h_assumptions
+  rcases h_input with ⟨⟨hx0, hx1, hx2, hx3, hx4, hx5, hx6, hx7⟩, hy0, hy1, hy2, hy3, hy4, hy5, hy6, hy7⟩
+  change And8.Assumptions ⟨Expression.eval env input_var_x.x0, Expression.eval env input_var_y.x0⟩ ∧
+    And8.Assumptions ⟨Expression.eval env input_var_x.x1, Expression.eval env input_var_y.x1⟩ ∧
+    And8.Assumptions ⟨Expression.eval env input_var_x.x2, Expression.eval env input_var_y.x2⟩ ∧
+    And8.Assumptions ⟨Expression.eval env input_var_x.x3, Expression.eval env input_var_y.x3⟩ ∧
+    And8.Assumptions ⟨Expression.eval env input_var_x.x4, Expression.eval env input_var_y.x4⟩ ∧
+    And8.Assumptions ⟨Expression.eval env input_var_x.x5, Expression.eval env input_var_y.x5⟩ ∧
+    And8.Assumptions ⟨Expression.eval env input_var_x.x6, Expression.eval env input_var_y.x6⟩ ∧
+    And8.Assumptions ⟨Expression.eval env input_var_x.x7, Expression.eval env input_var_y.x7⟩
+  simp only [And8.Assumptions, hx0, hx1, hx2, hx3, hx4, hx5, hx6, hx7,
+    hy0, hy1, hy2, hy3, hy4, hy5, hy6, hy7]
+  omega
 
 def circuit : FormalCircuit (F p) Inputs U64 where
   Assumptions

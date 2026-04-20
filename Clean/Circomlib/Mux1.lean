@@ -59,7 +59,9 @@ lemma Vector.getElem_map_singleton_flatten {α β : Type} {n : ℕ} (v : Vector 
   simp only [Vector.getElem_map (fun x => #v[f x]) hi]
   rfl
 
--- Note: Use the existing lemma getElem_eval_vector from Provable.lean instead
+@[simp, circuit_norm] lemma eval_fieldPair {F : Type} [Field F] (env : Environment F) (a b : Expression F) :
+    ProvableType.eval env (α := fieldPair) (a, b) = (Expression.eval env a, Expression.eval env b) := by
+  ext <;> simp [ProvableType.eval, toVars, toElements, fromElements, Vector.map, Vector.toArray]
 
 def circuit (n : ℕ) : FormalCircuit (F p) (Inputs n) (fields n) where
   main := main n
@@ -94,18 +96,19 @@ def circuit (n : ℕ) : FormalCircuit (F p) (Inputs n) (fields n) where
     simp only [circuit_norm] at h_output_i
     simp only [h_output_i]
 
-    -- Now we can work with the components
+    -- Fix stuck fromComponents match via definitional equality
+    change Inputs.mk (eval env input_var.c) (Expression.eval env input_var.s) = input at h_input
     rw [← h_input] at h_assumptions ⊢
-    simp only [Inputs.fromComponents_reduce, eval_vector, Vector.getElem_map] at h_assumptions ⊢
+    simp only [eval_vector, Vector.getElem_map] at h_assumptions ⊢
+    have eval_c (j : ℕ) (hj : j < n) :
+        ProvableType.eval (α := fieldPair) env input_var.c[j] =
+          (Expression.eval env input_var.c[j].1, Expression.eval env input_var.c[j].2) := by
+      rw [← Prod.eta (input_var.c[j])]; exact eval_fieldPair env _ _
     cases h_assumptions with
       | inl h0 =>
-        rw [h0]; simp
-        show _ = (eval env input_var.c[i]).1
-        rfl
+        rw [h0]; simp [eval_c i hi]
       | inr h1 =>
-        rw [h1]; simp
-        show _ = (eval env input_var.c[i]).2
-        rfl
+        rw [h1]; simp [eval_c i hi]
 
   completeness := by
     circuit_proof_start
@@ -178,21 +181,23 @@ def circuit : FormalCircuit (F p) Inputs field where
 
   soundness := by
     simp only [circuit_norm, main]
-    intro _ _ _ input h_input h_assumptions h_subcircuit_sound
-    rw [← h_input] at *; clear input; clear h_input
-    simp only [MultiMux1.circuit, circuit_norm, Inputs.fromComponents_reduce,
-      MultiMux1.Inputs.fromComponents_reduce, eval_vector] at h_subcircuit_sound h_assumptions ⊢
+    intro _ env input_var input h_input h_assumptions h_subcircuit_sound
+    change Inputs.mk (Vector.map (Expression.eval env) input_var.c) (Expression.eval env input_var.s) = input at h_input
+    subst h_input
+    simp only [MultiMux1.circuit, circuit_norm, eval_vector] at h_subcircuit_sound h_assumptions ⊢
+    change IsBool (Expression.eval env input_var.s) at h_assumptions
     specialize h_subcircuit_sound h_assumptions 0 (by omega)
+    change _ = if Expression.eval env input_var.s = 0 then _ else _ at h_subcircuit_sound
     rw [h_subcircuit_sound]
-    simp [eval_vector, Vector.getElem_map]
+    congr 1
+    all_goals (change _ = Expression.eval env _; congr 1)
 
   completeness := by
     simp only [circuit_norm, main]
     intros offset env input_var h_env input h_input h_s
-    simp only [MultiMux1.circuit, circuit_norm, Inputs.fromComponents_reduce,
-      MultiMux1.Inputs.fromComponents_reduce]
-    rw [← h_input] at h_s
-    simp only [Inputs.fromComponents_reduce] at h_s
+    change Inputs.mk (Vector.map (Expression.eval env) input_var.c) (Expression.eval env input_var.s) = input at h_input
+    subst h_input
+    simp only [MultiMux1.circuit, circuit_norm]
     exact h_s
 
 end Mux1
