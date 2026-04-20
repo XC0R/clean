@@ -550,7 +550,7 @@ attribute [circuit_norm] Vector.map_mk List.map_toArray List.map_cons List.map_n
 -- we often need to simplify concatenated vectors, e.g. for resolving `localWitnesses`
 attribute [circuit_norm] Vector.append_singleton Vector.mk_append_mk Vector.push_mk
   Array.append_singleton Array.append_empty List.push_toArray
-  List.nil_append List.cons_append List.append_toArray
+  List.nil_append List.append_nil List.cons_append List.append_toArray
   Vector.toArray_push Array.toList_push List.append_assoc
   Vector.eq_mk Vector.mk_eq
 
