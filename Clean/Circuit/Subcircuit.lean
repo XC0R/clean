@@ -287,16 +287,8 @@ instance : CoeFun (GeneralFormalCircuit F β α) (fun _ => Var β F → Circuit 
   coe circuit input := subcircuitWithAssertion circuit input
 
 @[circuit_norm]
-theorem FormalCircuit.coe_apply (circuit : FormalCircuit F β α) (input : Var β F) :
-    circuit input = subcircuit circuit input := rfl
-
-@[circuit_norm]
 theorem FormalAssertion.coe_apply (circuit : FormalAssertion F β) (input : Var β F) :
     circuit input = assertion circuit input := rfl
-
-@[circuit_norm]
-theorem GeneralFormalCircuit.coe_apply (circuit : GeneralFormalCircuit F β α) (input : Var β F) :
-    circuit input = subcircuitWithAssertion circuit input := rfl
 
 namespace Circuit
 variable {α β: TypeMap} [ProvableType α] [ProvableType β]
