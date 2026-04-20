@@ -409,13 +409,22 @@ private lemma and_completeness_to_witnesses (env : Environment (F p))
     (a b : Expression (F p)) (offset : ℕ)
     (h : env.UsesLocalWitnessesCompleteness offset (AND.main (a, b) |>.operations offset)) :
     env.UsesLocalWitnesses offset (AND.main (a, b) |>.operations offset) := by
-  simp only [AND.main, circuit_norm,
-    Environment.UsesLocalWitnesses, Operations.forAllFlat,
-    Environment.UsesLocalWitnessesCompleteness] at h ⊢
+  rw [Environment.usesLocalWitnessesCompleteness_iff_forAll] at h
+  rw [Environment.usesLocalWitnesses_iff_forAll]
+  simp only [AND.main, circuit_norm] at h ⊢
   refine ⟨h, ?_⟩
-  simp only [Gadgets.Equality.circuit, FormalAssertion.toSubcircuit, circuit_norm,
-    NestedOperations.toFlat, Operations.toNested, Gadgets.Equality.main, assertZero]
-  sorry
+  show env.UsesLocalWitnessesFlat (1 + offset) _
+  rw [Environment.usesLocalWitnessesFlat_iff_extends]
+  let s := (Gadgets.Equality.circuit (F := F p) id).toSubcircuit (offset + (1 + 0))
+      (var { index := offset }, a * b)
+  show env.ExtendsVector (FlatOperation.localWitnesses env s.ops.toFlat) (1 + offset)
+  have h_len : s.localLength = 0 := by
+    simp only [s, FormalAssertion.toSubcircuit_localLength]
+    rfl
+  rw [Environment.ExtendsVector]
+  intro ⟨i, hi⟩
+  have : FlatOperation.localLength s.ops.toFlat = 0 := by rw [← s.localLength_eq]; exact h_len
+  omega
 
 -- Helper lemma: UsesLocalWitnesses and UsesLocalWitnessesCompleteness are equivalent for MultiAND.main
 lemma main_usesLocalWitnesses_iff_completeness (n : ℕ) (input : Var (fields n) (F p)) (offset1 offset2 : ℕ) (env : Environment (F p)) :
@@ -481,8 +490,9 @@ lemma main_usesLocalWitnesses_iff_completeness (n : ℕ) (input : Var (fields n)
           · omega
         · rw [← Operations.forAllFlat, ← Environment.UsesLocalWitnesses]
           change env.UsesLocalWitnessesCompleteness _ (AND.main _ |>.operations _) at h_c3
-          convert and_completeness_to_witnesses env _ _ _ h_c3 using 1
-          · sorry
+          have key := and_completeness_to_witnesses env _ _ _ h_c3
+          convert key using 3
+          omega
 
 -- Extract Assumptions and Spec outside the circuit
 def Assumptions (n : ℕ) (input : fields n (F p)) : Prop :=
