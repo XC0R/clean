@@ -42,28 +42,33 @@ def circuit : FormalCircuit (F p) field field where
     output = (if input = 0 then 1 else 0)
 
   soundness := by
-    circuit_proof_start
-    simp only [id_eq, h_holds]
-    split_ifs with h_ifs
-    . simp only [h_ifs, zero_mul, neg_zero, zero_add]
-    . rw [neg_add_eq_zero]
-      have h1 := h_holds.left
-      have h2 := h_holds.right
-      rw [h1] at h2
-      simp only [id_eq, mul_eq_zero] at h2
-      cases h2
-      case neg.inl hl => contradiction
-      case neg.inr hr =>
-        rw [neg_add_eq_zero] at hr
-        exact hr
+    intro i₀ env input_var input h_input _ h_holds
+    subst h_input
+    simp only [circuit_norm, main] at h_holds ⊢
+    obtain ⟨h1, h2⟩ := h_holds
+    rw [h1]
+    by_cases h : Expression.eval env input_var = 0
+    · rw [ProvableType.eval_field, h]; simp; exact (if_pos rfl).symm
+    · rw [h1] at h2
+      have h_result := (mul_eq_zero.mp h2).resolve_left h
+      rw [ProvableType.eval_field]
+      convert h_result using 1
+      exact if_neg h
 
   completeness := by
-    circuit_proof_start
-    cases h_env with
-    | intro left right =>
-      simp only [left, ne_eq, id_eq, ite_not, mul_ite, mul_zero] at right
-      simp only [id_eq, right, left, ne_eq, ite_not, mul_ite, mul_zero, mul_eq_zero, true_and]
-      split_ifs <;> aesop
+    intro i₀ env input_var h_env _ h_input _
+    subst h_input
+    simp only [circuit_norm, main] at h_env ⊢
+    rcases h_env with ⟨left, right⟩
+    simp only [left, ne_eq, id_eq, ite_not, mul_ite, mul_zero] at right
+    simp only [id_eq, right, left, ne_eq, ite_not, mul_ite, mul_zero, mul_eq_zero, true_and]
+    split_ifs with h
+    · left; exact h
+    · right
+      have h_inv := mul_inv_cancel₀ h
+      calc -(Expression.eval env input_var * (Expression.eval env input_var)⁻¹) + 1
+          = -(1 : F p) + 1 := by rw [h_inv]
+        _ = 0 := by ring
 
 end IsZero
 
@@ -107,19 +112,14 @@ def circuit : FormalCircuit (F p) fieldPair field where
 
     rw [h1, h2] at h_holds
     simp only [IsZero.circuit] at h_holds ⊢
+    replace h_holds := h_holds trivial
 
     rw [h_holds, h1, h2]
 
     apply ite_congr
-    . ring_nf
-      simp [sub_eq_zero]
-
-    . intro h_eq
-      rfl
-    . intro h_eq
-      rfl
-
-    trivial
+    · exact sub_eq_zero
+    · intro; rfl
+    · intro; rfl
 
 end IsEqual
 
