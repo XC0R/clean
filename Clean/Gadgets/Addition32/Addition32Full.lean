@@ -47,15 +47,12 @@ def main (input : Var Inputs (F p)) : Circuit (F p) (Var Outputs (F p)) := do
   return { z := U32.mk z0 z1 z2 z3, carryOut := c3 }
 
 def Assumptions (input : Inputs (F p)) :=
-  let ⟨x, y, carryIn⟩ := input
-  x.Normalized ∧ y.Normalized ∧ IsBool carryIn
+  input.x.Normalized ∧ input.y.Normalized ∧ IsBool input.carryIn
 
 def Spec (input : Inputs (F p)) (out : Outputs (F p)) :=
-  let ⟨x, y, carryIn⟩ := input
-  let ⟨z, carryOut⟩ := out
-  z.value = (x.value + y.value + carryIn.val) % 2^32
-  ∧ carryOut.val = (x.value + y.value + carryIn.val) / 2^32
-  ∧ z.Normalized ∧ IsBool carryOut
+  out.z.value = (input.x.value + input.y.value + input.carryIn.val) % 2^32
+  ∧ out.carryOut.val = (input.x.value + input.y.value + input.carryIn.val) / 2^32
+  ∧ out.z.Normalized ∧ IsBool out.carryOut
 
 /--
 Elaborated circuit data can be found as follows:
@@ -71,12 +68,48 @@ instance elaborated : ElaboratedCircuit (F p) Inputs Outputs where
   localLength_eq _ i0 := by
     simp only [circuit_norm, main, Addition8FullCarry.main]
 
--- Soundness: sorry pending fromComponents iota-reduction fix in v4.29.0
--- The ProvableTypeList.cons match in Spec(ProvableStruct.eval env input_var) doesn't
--- iota-reduce. Completeness works via subst h_input (no Spec in goal).
--- See session 205 handoff for full diagnosis.
 theorem soundness : Soundness (F p) elaborated Assumptions Spec := by
-  sorry
+  intro i₀ env input_var input h_input h_assumptions h_holds
+  subst h_input
+  delta elaborated main Assumptions at h_holds h_assumptions
+  simp only [circuit_norm, Addition8FullCarry.main, ByteTable, U32.Normalized,
+             explicit_provable_type] at h_holds h_assumptions
+  simp only [Spec, circuit_norm, explicit_provable_type, U32.Normalized] at ⊢
+
+  obtain ⟨ hz0, hc0, h0, hz1, hc1, h1, hz2, hc2, h2, hz3, hc3, h3 ⟩ := h_holds
+  have ⟨ x_norm, y_norm, carry_in_bool ⟩ := h_assumptions
+  have ⟨ x0_byte, x1_byte, x2_byte, x3_byte ⟩ := x_norm
+  have ⟨ y0_byte, y1_byte, y2_byte, y3_byte ⟩ := y_norm
+
+  -- h0..h3 have form: a + b + c + -z + -(carry*256) = 0
+  -- add32_soundness needs: a + b + c = carry*256 + z
+  -- Convert using: if h : LHS = 0 then LHS + (z + carry*256) = z + carry*256
+  -- which ring-simplifies to a + b + c = carry*256 + z
+  -- Convert constraint equations from "a+b+c + -z + -(carry*256) = 0" to "a+b+c = carry*256+z"
+  -- using abelian group manipulation (ring/linear_combination don't work on ZMod p)
+  have convert_eq : ∀ (a b : F p), a + -b = 0 → a = b := by
+    intro a b h
+    have := congr_arg (· + b) h
+    simp [add_assoc, neg_add_cancel, zero_add] at this
+    exact this
+  have rearrange : ∀ (a b c d e : F p), a + b + c + -d + -(e * 256) = 0 →
+      a + b + c = e * 256 + d := by
+    intro a b c d e h
+    apply convert_eq; have : a + b + c + -(e * 256 + d) = a + b + c + -d + -(e * 256) := by abel
+    rw [this]; exact h
+
+  have eq0 := rearrange _ _ _ _ _ h0
+  have eq1 := rearrange _ _ _ _ _ h1
+  have eq2 := rearrange _ _ _ _ _ h2
+  have eq3 := rearrange _ _ _ _ _ h3
+
+  have key := Addition32.Theorems.add32_soundness
+    x0_byte x1_byte x2_byte x3_byte
+    y0_byte y1_byte y2_byte y3_byte
+    hz0 hz1 hz2 hz3
+    carry_in_bool hc0 hc1 hc2 hc3
+    eq0 eq1 eq2 eq3
+  exact ⟨ key.1, key.2, ⟨ hz0, hz1, hz2, hz3 ⟩, hc3 ⟩
 
 theorem completeness : Completeness (F p) elaborated Assumptions := by
   intro i₀ env input_var h_env input h_input h_assumptions
