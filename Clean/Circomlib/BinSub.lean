@@ -276,13 +276,14 @@ def circuit (n : ℕ) [hn : NeZero n] (hnout : 2^(n+1) < p) :
   main input := main n input
 
   localLength _ := n+1
-  localLength_eq := by simp [main, circuit_norm]
+  localLength_eq := by simp +arith [main, circuit_norm, ElaboratedCircuit.localLength,
+    Gadgets.Equality.circuit, FormalAssertion.toSubcircuit]
 
   output _ i := varFromOffset (fields n) i
 
   output_eq := by intros input offset; rfl
 
-  subcircuitsConsistent := by intros; and_intros <;> (try simp only [circuit_norm]; try first | ac_rfl | trivial)
+  subcircuitsConsistent := by simp +arith [circuit_norm, main, Gadgets.Equality.circuit]
 
   Assumptions input :=
     -- All inputs are binary
