@@ -34,16 +34,33 @@ instance elaborated : ElaboratedCircuit (F p) Inputs U32 where
   localLength _ := 8
   output _ i0 := ⟨var ⟨i0⟩, var ⟨i0 + 2⟩, var ⟨i0 + 4⟩, var ⟨i0 + 6⟩ ⟩
 
+set_option maxHeartbeats 800000 in
 theorem soundness : Soundness (F p) elaborated Assumptions Spec := by
-  rintro i0 env ⟨ x_var, y_var, carry_in_var ⟩ ⟨ x, y, carry_in ⟩ h_inputs as h
-  rw [←elaborated.output_eq] -- replace explicit output with internal output, which is derived from the subcircuit
-  simp_all [circuit_norm, Spec, main, Addition32Full.circuit,
-  Addition32Full.Assumptions, Addition32Full.Spec, Assumptions]
+  intro i₀ env input_var input h_input h_assumptions h_holds
+  subst h_input
+  rw [show ElaboratedCircuit.output input_var i₀ = (main input_var i₀).1 from rfl]
+  delta elaborated at h_holds
+  delta main at h_holds ⊢
+  simp only [circuit_norm, Addition32Full.circuit] at h_holds ⊢
+  change Addition32Full.Assumptions (Addition32Full.Inputs.mk (eval env input_var.x) (eval env input_var.y) 0) →
+    Addition32Full.Spec (Addition32Full.Inputs.mk (eval env input_var.x) (eval env input_var.y) 0)
+      (Addition32Full.Outputs.mk
+        (eval env (Addition32Full.main { x := input_var.x, y := input_var.y, carryIn := 0 } i₀).1.z)
+        (Expression.eval env (Addition32Full.main { x := input_var.x, y := input_var.y, carryIn := 0 } i₀).1.carryOut))
+    at h_holds
+  simp_all [Addition32Full.Assumptions, Addition32Full.Spec, Assumptions, Spec,
+    circuit_norm, explicit_provable_type, toVars, fromElements, U32.Normalized, IsBool]
 
+set_option maxHeartbeats 800000 in
 theorem completeness : Completeness (F p) elaborated Assumptions := by
-  rintro i0 env ⟨ x_var, y_var, carry_in_var ⟩ henv  ⟨ x, y, carry_in ⟩ h_inputs as
-  simp_all [circuit_norm, main, Addition32Full.circuit, Addition32Full.elaborated,
-  Addition32Full.Assumptions, Addition32Full.Spec, Assumptions, IsBool]
+  intro i₀ env input_var h_env input h_input h_assumptions
+  subst h_input
+  delta elaborated at h_env ⊢
+  delta main at h_env ⊢
+  simp only [circuit_norm, Addition32Full.circuit] at h_env ⊢
+  change Addition32Full.Assumptions (Addition32Full.Inputs.mk (eval env input_var.x) (eval env input_var.y) 0)
+  simp_all [Addition32Full.Assumptions, Assumptions,
+    circuit_norm, explicit_provable_type, toVars, fromElements, U32.Normalized, IsBool]
 
 def circuit : FormalCircuit (F p) Inputs U32 where
   Assumptions
