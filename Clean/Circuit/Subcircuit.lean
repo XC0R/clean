@@ -510,3 +510,28 @@ theorem FormalAssertion.toSubcircuit_completeness
     (circuit.toSubcircuit n input_var).Completeness env =
     (circuit.Assumptions (eval env input_var) ∧ circuit.Spec (eval env input_var)) := by
   rfl
+
+/--
+Reduces `ConstraintsHold.Soundness` for an assertion subcircuit directly,
+avoiding the need for simp to match on intermediate list structures.
+-/
+@[circuit_norm]
+theorem assertion_soundness
+    {F : Type} [Field F] {Input : TypeMap} [ProvableType Input]
+    (circuit : FormalAssertion F Input) (input_var : Var Input F) (n : ℕ) (env : Environment F) :
+    Circuit.ConstraintsHold.Soundness env ((assertion circuit input_var).operations n) ↔
+    (circuit.Assumptions (eval env input_var) → circuit.Spec (eval env input_var)) := by
+  simp only [assertion, Circuit.operations, Circuit.ConstraintsHold.Soundness, and_true,
+    FormalAssertion.toSubcircuit_soundness]
+
+/--
+Reduces `ConstraintsHold.Completeness` for an assertion subcircuit directly.
+-/
+@[circuit_norm]
+theorem assertion_completeness
+    {F : Type} [Field F] {Input : TypeMap} [ProvableType Input]
+    (circuit : FormalAssertion F Input) (input_var : Var Input F) (n : ℕ) (env : Environment F) :
+    Circuit.ConstraintsHold.Completeness env ((assertion circuit input_var).operations n) ↔
+    (circuit.Assumptions (eval env input_var) ∧ circuit.Spec (eval env input_var)) := by
+  simp only [assertion, Circuit.operations, Circuit.ConstraintsHold.Completeness, and_true,
+    FormalAssertion.toSubcircuit_completeness]
