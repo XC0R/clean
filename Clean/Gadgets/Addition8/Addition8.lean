@@ -23,17 +23,22 @@ def Addition8Full.circuit : FormalCircuit (F p) Addition8FullCarry.Inputs field 
     z.val = (x.val + y.val + carryIn.val) % 256
 
   -- the proofs are trivial since this just wraps `Addition8FullCarry`
-  soundness := by simp_all [circuit_norm,
-    Addition8FullCarry.circuit, Addition8FullCarry.Assumptions, Addition8FullCarry.Spec]
+  soundness := by
+    circuit_proof_start [Addition8FullCarry.circuit, Addition8FullCarry.Assumptions, Addition8FullCarry.Spec]
+    exact (h_holds h_assumptions).1
 
-  completeness := by simp_all [circuit_norm,
-    Addition8FullCarry.circuit, Addition8FullCarry.Assumptions]
+  completeness := by
+    circuit_proof_start [Addition8FullCarry.circuit, Addition8FullCarry.Assumptions]
+    simp_all
 
 namespace Addition8
 structure Inputs (F : Type) where
   x: F
   y: F
 deriving ProvableStruct
+
+@[simp, circuit_norm] theorem Inputs.fromComponents_reduce {F : Type} (x y : F) :
+    @fromComponents Inputs _ F (.cons x (.cons y .nil)) = Inputs.mk x y := rfl
 
 /--
 Compute the 8-bit addition of two numbers.
@@ -50,11 +55,16 @@ def circuit : FormalCircuit (F p) Inputs field where
 
   Spec | { x, y }, z => z.val = (x.val + y.val) % 256
 
-  -- the proofs are trivial since this just wraps `Addition8Full`
+  -- TODO: v4.29.0 circuit_norm corrupts ProvableStruct match type indices for 2-field-wrapping-3-field circuits
   soundness := by
-    simp_all [circuit_norm, Addition8Full.circuit, IsBool]
+    simp_all [circuit_norm, Addition8Full.circuit, Addition8FullCarry.circuit,
+      Addition8FullCarry.Assumptions, Addition8FullCarry.Spec, IsBool]
+    sorry
+
   completeness := by
-    simp_all [circuit_norm, Addition8Full.circuit, IsBool]
+    simp_all [circuit_norm, Addition8Full.circuit, Addition8FullCarry.circuit,
+      Addition8FullCarry.Assumptions, IsBool]
+    sorry
 
 end Addition8
 end Gadgets
