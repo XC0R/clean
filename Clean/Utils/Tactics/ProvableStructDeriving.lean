@@ -351,6 +351,26 @@ def mkProvableStructInstance (structName : Name) : CommandElabM Unit := do
 
   elabCommand cmd
 
+  -- v4.29.0: Lean's reduceMatcher? in whnf can't fire iota on the fromComponents match
+  -- (canUnfoldAtMatcher gating, independent of transparency). The kernel's isDefEq CAN,
+  -- so we emit a simp lemma proven by rfl that captures the reduction for simp/circuit_norm.
+  let lemmaName := mkIdent (structName ++ `fromComponents_reduce)
+  let fIdent := mkIdent `F
+  let lemmaCmd ←
+    if binderSyntaxes.isEmpty then
+      `(
+        @[simp, circuit_norm] theorem $lemmaName {$fIdent : Type} $[$fieldNameIdents:ident]* :
+          @fromComponents $structIdent _ $fIdent ($fromCompPat) = $mkAppSyntax := rfl
+      )
+    else
+      `(
+        @[simp, circuit_norm] theorem $lemmaName {$fIdent : Type}
+            $binderSyntaxes:bracketedBinder* $[$fieldNameIdents:ident]* :
+          @fromComponents ($appliedStructType) _ $fIdent ($fromCompPat) = $mkAppSyntax := rfl
+      )
+
+  elabCommand lemmaCmd
+
 /-- The deriving handler for ProvableStruct -/
 def provableStructDerivingHandler (declNames : Array Name) : CommandElabM Bool := do
   if declNames.size != 1 then

@@ -112,7 +112,7 @@ def arbitraryBitLengthCircuit (n : ℕ) : GeneralFormalCircuit (F p) field (fiel
     rw [this, fieldFromBits_fieldToBits h_assumptions]
 
 -- the main circuit implementation makes a stronger statement assuming 2^n < p
-@[reducible] def circuit (n : ℕ) (hn : 2^n < p) : GeneralFormalCircuit (F p) field (fields n) where
+def circuit (n : ℕ) (hn : 2^n < p) : GeneralFormalCircuit (F p) field (fields n) where
   main input := arbitraryBitLengthCircuit n input
   localLength _ := n
   output _ i := varFromOffset (fields n) i
