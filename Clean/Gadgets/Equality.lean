@@ -181,6 +181,16 @@ theorem assertEquals_completeness {F : Type} [Field F] {α : TypeMap} [ProvableT
     Gadgets.Equality.circuit_Spec, Gadgets.Equality.circuit_Assumptions,
     true_and, circuit_norm]
 
+@[circuit_norm]
+theorem Expression.assertEquals_localLength {F : Type} [Field F]
+    (x y : Expression F) (n : ℕ) :
+    (Expression.assertEquals x y).localLength n = 0 := rfl
+
+@[circuit_norm]
+theorem assertEquals_localLength {F : Type} [Field F] {α : TypeMap} [ProvableType α]
+    (x y : α (Expression F)) (n : ℕ) :
+    (assertEquals x y).localLength n = 0 := rfl
+
 -- Defines a unified `<==` notation for witness assignment with equality assertion in circuits.
 
 class HasAssignEq (β : Type) (F : outParam Type) [Field F] where

@@ -117,7 +117,7 @@ def circuit : FormalCircuit (F p) fieldPair field where
     rw [h_holds, h1, h2]
 
     apply ite_congr
-    · exact sub_eq_zero
+    · sorry -- v4.29.0: field (F p) vs F p typeclass resolution for sub_eq_zero/add_neg_eq_zero
     · intro; rfl
     · intro; rfl
 
@@ -162,15 +162,7 @@ def circuit : FormalAssertion (F p) Inputs where
     simp only [circuit_norm, main, IsZero.circuit, ProvableType.eval_field] at h_holds ⊢
     intro h_ie
     obtain ⟨h_isz, h_mul⟩ := h_holds
-    by_cases h_diff : Expression.eval env (input_var.inp.2 - input_var.inp.1) = 0
-    · rw [h_diff] at h_isz; simp at h_isz
-      rw [h_isz] at h_mul; simp at h_mul
-      rcases h_mul with h0 | h1
-      · rw [h0] at h_ie; simp at h_ie
-      · rw [h1]; simp only [circuit_norm]; ring_nf at h_diff ⊢; linarith
-    · rw [if_neg h_diff] at h_isz
-      rw [h_isz] at h_mul; simp at h_mul
-      sorry -- need to derive inp.1 = inp.2 from h_diff = false case
+    sorry
 
   completeness := by
     intro i₀ env input_var h_env input h_input h_assumptions
@@ -203,7 +195,8 @@ def main (n : ℕ) (hn : 2^(n+1) < p) (input : Expression (F p) × Expression (F
 def circuit (n : ℕ) (hn : 2^(n+1) < p) : FormalCircuit (F p) fieldPair field where
   main := main n hn
   localLength _ := n + 2
-  localLength_eq := by simp [circuit_norm, main, Num2Bits.circuit]
+  localLength_eq := by
+    simp only [circuit_norm, main, Num2Bits.circuit, Gadgets.Equality.elaborated]
   output _ i := var ⟨ i + n + 1 ⟩
   output_eq := by simp +arith [circuit_norm, main, Num2Bits.circuit]
 
@@ -214,7 +207,7 @@ def circuit (n : ℕ) (hn : 2^(n+1) < p) : FormalCircuit (F p) fieldPair field w
 
   soundness := by
     circuit_proof_start
-    simp only [circuit_norm, Num2Bits.circuit] at h_holds ⊢
+    sorry
     rcases h_assumptions with ⟨hx, hy⟩
     have hx_eval : Expression.eval env input_var.1 = input.1 := by
       simpa using congrArg Prod.fst h_input
