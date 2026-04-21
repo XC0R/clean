@@ -37,7 +37,7 @@ def Spec (offset : Fin 8) (x : F p) (out : Outputs (F p)) :=
   (low.val = x.val % (2^offset.val) ∧ high.val = x.val / (2^offset.val))
   ∧ (low.val < 2^offset.val ∧ high.val < 2^(8-offset.val))
 
-def elaborated (offset : Fin 8) : ElaboratedCircuit (F p) field Outputs where
+@[reducible] def elaborated (offset : Fin 8) : ElaboratedCircuit (F p) field Outputs where
   main := main offset
   localLength _ := 2
   output _ i0 := varFromOffset Outputs i0
@@ -119,6 +119,23 @@ theorem completeness (offset : Fin 8) : Completeness (F p) (elaborated offset) A
   · have : (2^offset.val : F p) = ((2^offset.val : ℕ+) : F p) := by simp
     rw [this, mul_comm, FieldUtils.mod_add_floorDiv]
 
+@[simp, circuit_norm]
+theorem Outputs.fromComponents_reduce {F : Type} (low high : F) :
+    @fromComponents Outputs _ F (.cons low (.cons high .nil)) = Outputs.mk low high := rfl
+
+@[simp, circuit_norm]
+theorem varFromOffset_Outputs {F : Type} (i0 : ℕ) :
+    ProvableStruct.varFromOffset (F := Expression F) Outputs i0 =
+    { low := var ⟨i0⟩, high := var ⟨i0 + 1⟩ } := rfl
+
+@[circuit_norm]
+theorem elaborated_localLength (off : Fin 8) (input : Var field (F p)) :
+    (elaborated off).localLength input = 2 := rfl
+
+@[circuit_norm]
+theorem elaborated_output (off : Fin 8) (input : Var field (F p)) (i0 : ℕ) :
+    (elaborated off).output input i0 = varFromOffset Outputs i0 := rfl
+
 def circuit (offset : Fin 8) : FormalCircuit (F p) field Outputs := {
   elaborated offset with
   main := main offset
@@ -127,4 +144,22 @@ def circuit (offset : Fin 8) : FormalCircuit (F p) field Outputs := {
   soundness := soundness offset
   completeness := completeness offset
 }
+
+@[circuit_norm]
+theorem circuit_localLength (off : Fin 8) (input : Var field (F p)) :
+    (circuit off).localLength input = 2 := rfl
+
+@[circuit_norm]
+theorem circuit_output (off : Fin 8) (input : Var field (F p)) (i0 : ℕ) :
+    (circuit off).output input i0 = varFromOffset Outputs i0 := rfl
+
+@[circuit_norm]
+theorem circuit_coe_output (off : Fin 8) (x : Expression (F p)) (n : ℕ) :
+    ((circuit off) x).output n =
+    ({ low := var ⟨n⟩, high := var ⟨n + 1⟩ } : Outputs (Expression (F p))) := rfl
+
+@[circuit_norm]
+theorem circuit_coe_localLength (off : Fin 8) (x : Expression (F p)) :
+    ((circuit off) x).localLength = 2 := rfl
+
 end Gadgets.ByteDecomposition

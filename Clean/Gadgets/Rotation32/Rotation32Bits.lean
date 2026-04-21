@@ -41,16 +41,21 @@ def output (offset : Fin 8) (i0 : ℕ) : U32 (Expression (F p)) :=
     (var ⟨i0 + i*2 + 1⟩) + var ⟨i0 + (i + 1) % 4 * 2⟩ * .const ((2^(8-offset.val) : ℕ) : F p))
 
 -- #eval main (p:=p_babybear) 1 default |>.output
-def elaborated (off : Fin 8) : ElaboratedCircuit (F p) U32 U32 where
+@[reducible] def elaborated (off : Fin 8) : ElaboratedCircuit (F p) U32 U32 where
   main := main off
   localLength _ := 8
   output _inputs i0 := output off i0
   localLength_eq _ i0 := by
     simp only [circuit_norm, main, ByteDecomposition.circuit, ByteDecomposition.elaborated]
   output_eq _ _ := by
-    simp only [circuit_norm, main, output, ByteDecomposition.circuit, ByteDecomposition.elaborated]
+    simp only [circuit_norm, main, output, ByteDecomposition.circuit]
     apply congrArg U32.fromLimbs
-    simp [Vector.ext_iff, Vector.getElem_rotate]
+    simp only [Vector.ext_iff, Vector.getElem_ofFn, Vector.getElem_map,
+      Vector.getElem_zip, Vector.getElem_rotate, Vector.getElem_mapIdx]
+    intro i hi
+    change var ⟨_ + i * 2 + 1⟩ + var ⟨_ + (i + 1) % 4 * 2⟩ * Expression.const _ =
+           var ⟨_ + i * 2 + 1⟩ + var ⟨_ + (i + 1) % 4 * 2⟩ * Expression.const _
+    rfl
   subcircuitsConsistent _ _ := by
     simp +arith only [circuit_norm, main,
       ByteDecomposition.circuit, ByteDecomposition.elaborated]
@@ -84,14 +89,19 @@ theorem soundness (offset : Fin 8) : Soundness (F p) (elaborated offset) Assumpt
       ys[i].val = xs[i].val / 2^o + (xs[(i + 1) % 4].val % 2^o) * 2^(8-o) := by
     simp only [ys, y, output, U32.ByteVector.eval_fromLimbs, U32.ByteVector.toLimbs_fromLimbs,
       Vector.getElem_map, Vector.getElem_ofFn, Expression.eval]
+    -- v4.29.0: change to resolve stuck fromComponents match in goal
+    change (env.get (i0 + i * 2 + 1) + env.get (i0 + (i + 1) % 4 * 2) * base).val < 2 ^ 8 ∧
+      (env.get (i0 + i * 2 + 1) + env.get (i0 + (i + 1) % 4 * 2) * base).val =
+        xs[i].val / 2 ^ o + xs[(i + 1) % 4].val % 2 ^ o * 2 ^ (8 - o)
+    set high := env.get (i0 + i * 2 + 1)
+    set next_low := env.get (i0 + (i + 1) % 4 * 2)
     set high := env.get (i0 + i * 2 + 1)
     set next_low := env.get (i0 + (i + 1) % 4 * 2)
     have ⟨⟨_, high_eq⟩, ⟨_, high_lt⟩⟩ := h_holds i hi
     have ⟨⟨next_low_eq, _⟩, ⟨next_low_lt, _⟩⟩ := h_holds ((i + 1) % 4) (Nat.mod_lt _ (by norm_num))
     have next_low_lt' : next_low.val < 2^(8 - (8 - o)) := by rw [Nat.sub_sub_self offset.is_le']; exact next_low_lt
     have ⟨lt, eq⟩ := byteDecomposition_lt (8-o) neg_offset_le high_lt next_low_lt'
-    use lt
-    rw [eq, high_eq, next_low_eq]
+    exact ⟨lt, eq ▸ high_eq ▸ next_low_eq ▸ rfl⟩
 
   -- prove that the output is normalized
   have y_norm : y.Normalized := by
